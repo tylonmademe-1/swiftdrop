@@ -45,43 +45,43 @@
   --color-surface-dark-soft: #1f1e1b;
   --color-error-container: #ffdad6;
   --color-accent-amber: #e8a55a;
-  --color-primary: #cc785c;
-  --color-primary-active: #b8654a;
-  --color-muted: #6c6a64;
+  --color-primary: #fe4543;
+  --color-primary-active: #d83f53;
+  --color-muted: #666666;
   --color-surface-container-high: #e9e8e4;
-  --color-surface-tint: #924a31;
+  --color-surface-tint: #fe4543;
   --color-inverse-on-surface: #f2f1ed;
   --color-on-tertiary-container: #f4fffa;
   --color-surface-container-highest: #e3e2df;
-  --color-surface-cream-strong: #e8e0d2;
+  --color-surface-cream-strong: #fff0f2;
   --color-inverse-surface: #2f312e;
-  --color-canvas: #faf9f5;
+  --color-canvas: #f8f9fa;
   --color-surface-dim: #dbdad6;
   --color-surface-container-low: #f4f4f0;
   --color-secondary: #605e5b;
-  --color-body: #3d3d3a;
-  --color-ink: #141413;
+  --color-body: #333333;
+  --color-ink: #212529;
   --color-surface-container-lowest: #ffffff;
   --color-surface-container: #efeeea;
   --color-on-secondary: #ffffff;
   --color-tertiary-fixed-dim: #7cd7c4;
   --color-tertiary: #00685a;
-  --color-primary-fixed: #ffdbd0;
+  --color-primary-fixed: #fff0f2;
   --color-on-secondary-fixed-variant: #484644;
-  --color-surface: #faf9f5;
-  --color-on-background: #1b1c1a;
+  --color-surface: #ffffff;
+  --color-on-background: #212529;
   --color-inverse-primary: #ffb59d;
   --color-tertiary-container: #1d8372;
 
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Newsreader', Georgia, serif;
+  --font-sans: 'Roboto', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-code: 'JetBrains Mono', monospace;
 }
 
 @layer base {
   :root {
-    --primary: #cc785c;
-    --primary-hover: #b8654a;
+    --primary: #fe4543;
+    --primary-hover: #d83f53;
   }
 
   *, *::before, *::after {
@@ -295,7 +295,75 @@
   animation: legBackB 0.38s ease-in-out infinite;
 }
 .progress-shimmer {
-  background: linear-gradient(90deg, #cc785c 0%, #dd8b72 35%, #f7d2c3 50%, #dd8b72 65%, #cc785c 100%);
+  background: linear-gradient(90deg, #fe4543 0%, #ff6b69 35%, #ffd2d1 50%, #ff6b69 65%, #fe4543 100%);
   background-size: 200% 100%;
   animation: shimmerStream 2.4s linear infinite;
+}
+
+/* Authentic Send Anywhere Design Tokens & Utility Classes */
+.sa-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #ebebeb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sa-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.sa-btn-primary {
+  background-color: #fe4543;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 6px;
+  transition: all 0.15s ease-in-out;
+}
+
+.sa-btn-primary:hover:not(:disabled) {
+  background-color: #d83f53;
+  box-shadow: 0 4px 12px rgba(254, 69, 67, 0.25);
+}
+
+.sa-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Plus button for file drop */
+.sa-plus-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #fff0f2;
+  color: #fe4543;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sa-plus-btn:hover {
+  background-color: #fe4543;
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+/* 6-Digit Key Box (Send Anywhere Waiting Screen) */
+.sa-key-digit {
+  width: 44px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #212529;
+  background-color: #fafafa;
+  border: 1px solid #e0e4e6;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-code);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }

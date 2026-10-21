@@ -23,7 +23,7 @@ import {
   OverallTransferProgress,
   FileTransferProgress
 } from '../types/transfer';
-import { Plus, ArrowRight, FileText, X, Key, QrCode } from 'lucide-react';
+import { Plus, ArrowRight, ArrowLeft, FileText, X, Key, QrCode } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (tab: string) => void;
@@ -1580,585 +1580,556 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col items-center px-3 sm:px-6 md:px-8 py-4 sm:py-8 md:py-12 sm:my-auto">
-      {/* Minimalist Editorial Hero Header */}
-      <div className="text-center max-w-xl mx-auto mb-5 sm:mb-8 space-y-2 sm:space-y-2.5 px-1">
-        <h1 className="font-display text-2xl sm:text-4xl md:text-[46px] font-normal tracking-tight text-[#141413] leading-tight">
-          SwiftDrop. <span className="italic font-normal text-[#cc785c]">Direct &amp; Instant.</span>
+    <div className="w-full flex-1 flex flex-col items-center px-3 sm:px-6 md:px-8 py-5 sm:py-8 md:py-12 sm:my-auto">
+      {/* Send Anywhere Style Hero Header */}
+      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9 space-y-1 sm:space-y-2 px-1">
+        <h1 className="text-2xl sm:text-4xl md:text-[40px] font-extrabold tracking-tight text-[#212529] leading-tight font-sans">
+          Easy, fast and unlimited <span className="text-[#fe4543]">file transfer</span>
         </h1>
-        <p className="text-xs sm:text-[15px] text-[#6c6a64] tracking-normal font-normal">
-          © tylonmademe
+        <p className="text-xs sm:text-[14px] text-[#666666] font-normal">
+          Direct device-to-device streaming up to 50 GB with temporary 6-digit key.
         </p>
       </div>
 
-      {/* Unified Tabbed Console Card */}
-      <div className="w-full max-w-[42.5rem] min-h-[26rem] sm:min-h-[30rem] bg-white rounded-2xl border border-[#e6dfd8] shadow-[0_16px_48px_-16px_rgba(20,20,19,0.06)] overflow-hidden transition-all duration-300 flex flex-col">
-        {/* Segmented Control Bar Embedded Flush in Header */}
-        <div className="p-2.5 sm:p-3.5 border-b border-[#e6dfd8]/80 bg-[#f4f4f0]/60">
-          <div className="grid grid-cols-2 p-1 sm:p-1.5 rounded-xl bg-[#f4f4f0] border border-[#e6dfd8] relative">
-            <button
-              type="button"
-              onClick={() => {
-                if (isReceiverActive) {
-                  showToast('Complete or cancel your active Receive session before switching to Send.', 'error');
-                  return;
-                }
-                setActiveTab('send');
-                onNavigate('send');
-              }}
-              className={`console-tab-btn relative z-10 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-lg text-[13px] sm:text-[14px] flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 cursor-pointer ${
-                activeTab === 'send'
-                  ? 'bg-white text-[#141413] shadow-xs font-semibold'
-                  : 'text-[#6c6a64] hover:text-[#141413] font-medium'
-              }`}
-            >
-              <svg
-                className={`w-4 h-4 shrink-0 ${activeTab === 'send' ? 'text-[#cc785c]' : 'text-[#6c6a64]'}`}
-                fill="none"
-                height="18"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                width="18"
-              >
-                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-                <path d="M12 12v9" />
-                <path d="m16 16-4-4-4 4" />
-              </svg>
-              <span className="truncate">Send Files</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (isSenderActive) {
-                  showToast('Cancel or complete your active Send session before switching to Receive.', 'error');
-                  return;
-                }
-                setActiveTab('receive');
-                onNavigate('receive');
-              }}
-              className={`console-tab-btn relative z-10 py-2 sm:py-2.5 px-2.5 sm:px-4 rounded-lg text-[13px] sm:text-[14px] flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 cursor-pointer ${
-                activeTab === 'receive'
-                  ? 'bg-white text-[#141413] shadow-xs font-semibold'
-                  : 'text-[#6c6a64] hover:text-[#141413] font-medium'
-              }`}
-            >
-              <svg
-                className={`w-4 h-4 shrink-0 ${activeTab === 'receive' ? 'text-[#cc785c]' : 'text-[#6c6a64]'}`}
-                fill="none"
-                height="18"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                width="18"
-              >
-                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
-                <path d="M12 12v9" />
-                <path d="m8 17 4 4 4-4" />
-              </svg>
-              <span className="truncate">Receive Files</span>
-            </button>
-          </div>
+      {/* Mobile Tab Toggle (visible only on mobile screens < 768px) */}
+      <div className="md:hidden w-full max-w-sm mx-auto mb-4">
+        <div className="grid grid-cols-2 p-1 rounded-lg bg-[#f1f1f1] border border-[#e0e4e6]">
+          <button
+            type="button"
+            onClick={() => {
+              if (isReceiverActive) {
+                showToast('Complete or cancel your active Receive session before switching to Send.', 'error');
+                return;
+              }
+              setActiveTab('send');
+              onNavigate('send');
+            }}
+            className={`py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              activeTab === 'send'
+                ? 'bg-white text-[#212529] shadow-xs'
+                : 'text-[#666666]'
+            }`}
+          >
+            Send
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (isSenderActive) {
+                showToast('Cancel or complete your active Send session before switching to Receive.', 'error');
+                return;
+              }
+              setActiveTab('receive');
+              onNavigate('receive');
+            }}
+            className={`py-2 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              activeTab === 'receive'
+                ? 'bg-white text-[#212529] shadow-xs'
+                : 'text-[#666666]'
+            }`}
+          >
+            Receive
+          </button>
         </div>
+      </div>
 
+      {/* Dual Cards Grid (Desktop: Side-by-Side Dual Cards | Mobile: Selected Tab Card) */}
+      <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         {/* ============================================================ */}
-        {/* CONSOLE BODY: SEND TAB PANE                                  */}
+        {/* LEFT CARD: SEND                                             */}
         {/* ============================================================ */}
-        {activeTab === 'send' && (
-          <div className="p-4 sm:p-7 md:p-9 flex flex-col justify-between flex-1 min-h-[20rem] sm:min-h-[23.75rem]">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileInputChange}
-              className="hidden"
-            />
+        <div
+          className={`sa-card bg-white rounded-xl border border-[#ebebeb] shadow-[0_4px_20px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col justify-between p-5 sm:p-7 min-h-[26rem] sm:min-h-[29rem] ${
+            activeTab !== 'send' ? 'hidden md:flex' : 'flex'
+          }`}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleFileInputChange}
+            className="hidden"
+          />
 
-            {/* STATE 1: SELECT FILES */}
-            {senderStatus === 'created' && (
-              <>
-                {selectedFiles.length === 0 ? (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setIsDragging(true);
-                    }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={handleFileDrop}
-                    className={`group border border-dashed rounded-xl p-6 sm:p-8 md:p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 flex-1 ${
-                      isDragging
-                        ? 'border-[#cc785c] bg-[#f5f0e8]'
-                        : 'border-[#e6dfd8] bg-[#f4f4f0]/40 hover:bg-[#f5f0e8] hover:border-[#cc785c]/40'
-                    }`}
-                  >
-                    <div className="w-13 h-13 p-3 rounded-full bg-white flex items-center justify-center text-[#cc785c] shadow-xs border border-[#e6dfd8] mb-3 group-hover:scale-105 transition-transform">
-                      <Plus className="w-6 h-6 stroke-[2.5]" />
-                    </div>
-                    <p className="font-semibold text-[#141413] text-[16px]">
-                      Drop files or browse
-                    </p>
-                    <p className="text-xs text-[#6c6a64] mt-1.5 font-medium">
-                      WebRTC direct peer channel • Zero cloud staging
-                    </p>
+          {/* CARD HEADER */}
+          <div className="flex items-center justify-between pb-3.5 border-b border-[#ebebeb]">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#fe4543]" />
+              <h2 className="text-[18px] sm:text-[20px] font-bold text-[#212529]">
+                {senderStatus === 'waiting_for_receiver' ||
+                senderStatus === 'receiver_pending' ||
+                senderStatus === 'negotiating' ||
+                senderStatus === 'awaiting_acceptance'
+                  ? '6-digit Key'
+                  : senderStatus === 'transferring'
+                  ? 'Sending Files'
+                  : 'Send'}
+              </h2>
+            </div>
+            {selectedFiles.length > 0 && senderStatus === 'created' && (
+              <button
+                type="button"
+                onClick={handleResetSender}
+                className="text-xs text-[#666666] hover:text-[#fe4543] font-medium transition-colors cursor-pointer"
+              >
+                Clear ({selectedFiles.length})
+              </button>
+            )}
+          </div>
+
+          {/* STATE 1: SELECT FILES */}
+          {senderStatus === 'created' && (
+            <div className="flex-1 flex flex-col justify-between my-2">
+              {selectedFiles.length === 0 ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleFileDrop}
+                  className={`group border-2 border-dashed rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 flex-1 my-3 ${
+                    isDragging
+                      ? 'border-[#fe4543] bg-[#fff0f2]'
+                      : 'border-[#e0e4e6] bg-[#fafafa] hover:bg-[#fff0f2]/40 hover:border-[#fe4543]/60'
+                  }`}
+                >
+                  <div className="sa-plus-btn w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#fff0f2] text-[#fe4543] flex items-center justify-center mb-3 group-hover:scale-105 group-hover:bg-[#fe4543] group-hover:text-white transition-all shadow-2xs border border-[#fe4543]/20">
+                    <Plus className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
                   </div>
-                ) : (
-                  <div className="flex-1 flex flex-col justify-between space-y-4">
-                    <div className="p-4 bg-[#f4f4f0]/60 rounded-xl border border-[#e6dfd8]">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-[#6c6a64]">
-                          Selected Files ({selectedFiles.length})
-                        </span>
-                        <span className="text-xs font-code text-[#cc785c]">
-                          {formatBytes(totalBytes)}
-                        </span>
-                      </div>
+                  <p className="font-bold text-[#212529] text-[15px] sm:text-[16px]">
+                    Click or drag files here
+                  </p>
+                  <p className="text-xs text-[#9b9b9b] mt-1 font-normal">
+                    Up to 50 GB • Direct device-to-device
+                  </p>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col justify-between space-y-3 my-3">
+                  <div className="p-3.5 bg-[#fafafa] rounded-xl border border-[#ebebeb]">
+                    <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#ebebeb]">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                        Selected Files ({selectedFiles.length})
+                      </span>
+                      <span className="text-xs font-code font-bold text-[#fe4543]">
+                        {formatBytes(totalBytes)}
+                      </span>
+                    </div>
 
-                      <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
-                        {selectedFiles.map((file, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#e6dfd8]/70 text-xs"
-                          >
-                            <div className="flex items-center gap-2 truncate">
-                              <FileText className="w-4 h-4 text-[#cc785c] shrink-0" />
-                              <span className="truncate text-[#141413] font-medium">
-                                {file.name}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0 ml-2">
-                              <span className="text-[#6c6a64] font-code">
-                                {formatBytes(file.size)}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeFile(idx)}
-                                className="text-[#6c6a64] hover:text-[#c64545] cursor-pointer"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
+                    <div className="max-h-44 overflow-y-auto space-y-1.5 pr-1">
+                      {selectedFiles.map((file, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ebebeb] text-xs hover:border-[#fe4543]/40 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <FileText className="w-4 h-4 text-[#fe4543] shrink-0" />
+                            <span className="truncate text-[#212529] font-medium">
+                              {file.name}
+                            </span>
                           </div>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="mt-3 text-xs text-[#cc785c] hover:underline flex items-center gap-1 cursor-pointer font-medium"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        Add more files
-                      </button>
+                          <div className="flex items-center gap-2.5 shrink-0 ml-2">
+                            <span className="text-[#666666] font-code">
+                              {formatBytes(file.size)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeFile(idx)}
+                              className="text-[#9b9b9b] hover:text-[#c64545] cursor-pointer p-0.5"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                )}
 
-                <div className="pt-5">
-                  {selectedFiles.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => handleCreateSenderSession('code')}
-                        className="flex items-center justify-center gap-2 bg-white hover:bg-[#f4f4f0] text-[#141413] border border-[#e6dfd8] font-semibold text-[14px] h-12 rounded-xl shadow-xs transition-all duration-200 active:scale-[0.99] cursor-pointer"
-                      >
-                        <Key className="w-4 h-4 text-[#cc785c]" />
-                        <span>Create Session Code</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCreateSenderSession('qr')}
-                        className="flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[14px] h-12 rounded-xl shadow-xs transition-all duration-200 active:scale-[0.99] cursor-pointer"
-                      >
-                        <QrCode className="w-4 h-4" />
-                        <span>Connect with QR Code</span>
-                      </button>
-                    </div>
-                  ) : (
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[15px] h-12 rounded-xl shadow-xs transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                      className="mt-2.5 text-xs text-[#fe4543] hover:underline flex items-center gap-1 cursor-pointer font-bold"
                     >
-                      <span>Send Files</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                      Add more files
                     </button>
-                  )}
+                  </div>
                 </div>
-              </>
-            )}
+              )}
 
-            {/* STATE 2: WAITING FOR RECEIVER / PAIRING */}
-            {(senderStatus === 'waiting_for_receiver' ||
-              senderStatus === 'receiver_pending' ||
-              senderStatus === 'negotiating' ||
-              senderStatus === 'awaiting_acceptance') &&
-              (() => {
-                const cleanCode = (pairingCode || '').replace(/[^A-Za-z0-9]/g, '');
-                const codePart1 = cleanCode.slice(0, 3) || '•••';
-                const codePart2 = cleanCode.slice(3, 6) || (cleanCode.length > 3 ? cleanCode.slice(3) : '•••');
-                const mascotPercent = cloudPackageReady
-                  ? 100
-                  : (!cloudPackageReady && cloudUploadPercent > 0
-                    ? cloudUploadPercent
-                    : 18);
+              <div className="pt-3">
+                {selectedFiles.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => handleCreateSenderSession('code')}
+                    className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
+                  >
+                    <span>Send ({selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'})</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
+                  >
+                    <span>Select Files</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
-                return (
-                  <div className="flex-1 flex flex-col justify-between space-y-4 sm:space-y-5">
-                    <div className="editorial-card rounded-2xl p-4 sm:p-6 flex flex-col items-center text-center space-y-4">
-                      {/* Status Header */}
-                      <div className="w-full flex items-center justify-between gap-2 border-b border-[#e4ded5] pb-3">
-                        <div className="flex items-center gap-2 text-xs font-medium text-[#141413] text-left">
-                          <span className="relative flex h-2.5 w-2.5 shrink-0">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#cc785c] opacity-75" />
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#cc785c]" />
-                          </span>
-                          <span>
-                            {senderStatus === 'waiting_for_receiver' &&
-                              (!cloudPackageReady && cloudUploadPercent > 0
-                                ? `Uploading 5MB chunks (${cloudUploadPercent}% • ${formatSpeed(cloudUploadSpeed)})...`
-                                : cloudPackageReady
-                                  ? 'Link & Code Ready • Stored for 3 days + Live P2P'
-                                  : 'Waiting for receiver to connect...')}
-                            {senderStatus === 'receiver_pending' && `${receiverLabel} joined • Connecting...`}
-                            {senderStatus === 'negotiating' && `Negotiating WebRTC with ${receiverLabel}...`}
-                            {senderStatus === 'awaiting_acceptance' && `Waiting for ${receiverLabel} to accept...`}
-                          </span>
-                        </div>
-                      </div>
+          {/* STATE 2: WAITING FOR RECEIVER (SEND ANYWHERE 6-DIGIT KEY SCREEN) */}
+          {(senderStatus === 'waiting_for_receiver' ||
+            senderStatus === 'receiver_pending' ||
+            senderStatus === 'negotiating' ||
+            senderStatus === 'awaiting_acceptance') &&
+            (() => {
+              const cleanCode = (pairingCode || '').replace(/[^A-Za-z0-9]/g, '');
+              const digits = (cleanCode.padEnd(6, '•')).slice(0, 6).split('');
+              const mascotPercent = cloudPackageReady
+                ? 100
+                : (!cloudPackageReady && cloudUploadPercent > 0
+                  ? cloudUploadPercent
+                  : 18);
 
-                      {/* Main Pairing Box */}
-                      <div className="code-inner-box p-4 sm:p-6 relative overflow-hidden group w-full">
-                        {/* Corner accent glow */}
-                        <div className="absolute -top-12 -right-12 w-28 h-28 bg-[#cc785c]/10 rounded-full blur-2xl pointer-events-none" />
-
-                        {/* Pairing Content: Side-by-side on sm:, stacked on mobile */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
-                          {/* Left: Session Access Code & Action Buttons */}
-                          <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left w-full">
-                            <div className="flex items-center gap-1.5 mb-1.5 text-[#6c6a64]">
-                              <span className="material-symbols-outlined text-[15px]">pin</span>
-                              <span className="text-[11px] font-semibold uppercase tracking-widest">
-                                Session Access Code
-                              </span>
-                            </div>
-
-                            {/* Split code display */}
-                            <div
-                              role="button"
-                              tabIndex={0}
-                              onClick={handleCopyCode}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  handleCopyCode();
-                                }
-                              }}
-                              className="my-2 sm:my-3 flex items-center justify-center sm:justify-start gap-2 sm:gap-3 cursor-pointer select-all group transition-transform active:scale-[0.98]"
-                              title="Click to copy code"
-                            >
-                              <div className="code-segment font-code text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-widest text-[#141413] bg-[#faf8f4] border border-[#e4ded5] px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs group-hover:border-[#cc785c]/40 transition-colors">
-                                {codePart1}
-                              </div>
-                              <span className="font-code text-2xl sm:text-3xl font-bold text-[#cc785c] select-none">-</span>
-                              <div className="code-segment font-code text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-widest text-[#141413] bg-[#faf8f4] border border-[#e4ded5] px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-xs group-hover:border-[#cc785c]/40 transition-colors">
-                                {codePart2}
-                              </div>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-2 mt-2 w-full max-w-xs justify-center sm:justify-start">
-                              <button
-                                type="button"
-                                onClick={handleCopyCode}
-                                disabled={!pairingCode}
-                                className="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-[#faf8f4] border border-[#e4ded5] text-xs font-semibold text-[#141413] flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-                              >
-                                <span className="material-symbols-outlined text-[15px] text-[#cc785c]">
-                                  {copiedCode ? 'check' : 'content_copy'}
-                                </span>
-                                <span>{copiedCode ? 'Copied!' : 'Copy Code'}</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={handleCopyLink}
-                                disabled={!qrUrl}
-                                className="flex-1 py-2 px-3 rounded-xl bg-[#cc785c] hover:bg-[#b8654a] text-xs font-semibold text-white flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-                              >
-                                <span className="material-symbols-outlined text-[15px]">
-                                  {copiedLink ? 'check' : 'link'}
-                                </span>
-                                <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Right: QR Code Display */}
-                          <div className="flex flex-col items-center shrink-0">
-                            {/* Mode selector pills (Pairing QR vs Optical Stream) */}
-                            <div className="inline-flex p-0.5 rounded-lg bg-[#faf8f4] border border-[#e4ded5] mb-2.5">
-                              <button
-                                type="button"
-                                onClick={() => setQrMode('pairing')}
-                                className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
-                                  qrMode === 'pairing' ? 'bg-white text-[#141413] shadow-2xs border border-[#e4ded5]' : 'text-[#6c6a64] hover:text-[#141413]'
-                                }`}
-                              >
-                                Pairing QR
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setQrMode('optical')}
-                                className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold transition-all cursor-pointer ${
-                                  qrMode === 'optical' ? 'bg-white text-[#141413] shadow-2xs border border-[#e4ded5]' : 'text-[#6c6a64] hover:text-[#141413]'
-                                }`}
-                              >
-                                Optical Stream
-                              </button>
-                            </div>
-
-                            {/* QR Frame */}
-                            <div className="p-2.5 bg-white border border-[#e4ded5] rounded-xl shadow-xs relative group qr-preserve-white">
-                              <div className="w-32 h-32 sm:w-36 sm:h-36 bg-white rounded-lg flex items-center justify-center border border-[#e4ded5]/60 overflow-hidden">
-                                {qrMode === 'optical' ? (
-                                  opticalFrameUrl ? (
-                                    <img src={opticalFrameUrl} alt="QRFerry Optical Stream" className="w-full h-full object-contain" />
-                                  ) : (
-                                    <div className="flex flex-col items-center gap-1.5 p-2 text-center">
-                                      <span className="material-symbols-outlined text-xl text-[#cc785c] animate-spin">sync</span>
-                                      <span className="text-[11px] text-[#6c6a64] font-medium">Encoding stream...</span>
-                                    </div>
-                                  )
-                                ) : qrDataUrl ? (
-                                  <img src={qrDataUrl} alt="Session QR Code" className="w-full h-full object-contain" />
-                                ) : (
-                                  <div className="flex flex-col items-center gap-1.5 p-2 text-center">
-                                    <span className="material-symbols-outlined text-xl text-[#cc785c] animate-spin">sync</span>
-                                    <span className="text-[11px] text-[#6c6a64] font-medium">Generating QR...</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="mt-1.5 flex flex-col items-center">
-                              <span className="text-[10px] font-mono uppercase tracking-widest text-[#cc785c] font-bold">
-                                {qrMode === 'optical' ? `Frame ${opticalFrameIndex}/${opticalTotalFrames || 1}` : 'Scan with camera'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Mascot Running Track */}
-                        <div className="w-full mt-5 pt-3 border-t border-[#e4ded5]/70">
-                          <div className="relative w-full h-10 flex items-end">
-                            {/* Animated Dog Mascot galloping along the bar */}
-                            <div
-                              className="dog-gallop absolute bottom-1.5 z-10 transition-all duration-300 pointer-events-none"
-                              style={{ left: `${Math.min(94, Math.max(6, mascotPercent))}%`, transform: 'translateX(-50%)' }}
-                            >
-                              <svg width="40" height="26" viewBox="0 0 52 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path className="dog-tail-wag" d="M10 14 C6 11, 3 8, 2 5" stroke="#cc785c" strokeWidth="3" strokeLinecap="round" />
-                                <line className="leg-ba" x1="14" y1="22" x2="11" y2="31" stroke="#a05238" strokeWidth="3" strokeLinecap="round" />
-                                <line className="leg-bb" x1="18" y1="22" x2="22" y2="31" stroke="#cc785c" strokeWidth="3" strokeLinecap="round" />
-                                <ellipse cx="23" cy="18" rx="13" ry="7" fill="#cc785c" />
-                                <circle cx="36" cy="11" r="6" fill="#cc785c" />
-                                <path className="dog-ear" d="M34 9 C32 13, 31 18, 33 20" stroke="#7e3f2b" strokeWidth="2.5" strokeLinecap="round" />
-                                <ellipse cx="41" cy="12" rx="4" ry="2.5" fill="#cc785c" />
-                                <circle cx="44.5" cy="11.5" r="1.2" fill="#141413" />
-                                <circle cx="37" cy="9.5" r="1" fill="#141413" />
-                                <rect x="31" y="12" width="2" height="6" rx="1" fill="#faf8f4" />
-                                <line className="leg-fa" x1="30" y1="22" x2="35" y2="31" stroke="#cc785c" strokeWidth="3" strokeLinecap="round" />
-                                <line className="leg-fb" x1="26" y1="22" x2="21" y2="31" stroke="#a05238" strokeWidth="3" strokeLinecap="round" />
-                              </svg>
-                            </div>
-
-                            {/* Progress Track Bar */}
-                            <div className="w-full bg-[#e4ded5] h-2 rounded-full overflow-hidden relative">
-                              <div
-                                className="progress-shimmer bg-[#cc785c] h-full rounded-full transition-all duration-300"
-                                style={{ width: `${mascotPercent}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="flex flex-wrap items-center justify-start gap-1 text-[11px] text-[#6c6a64] mt-2 font-mono">
-                            <span className="flex items-center gap-1.5">
-                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#cc785c]" />
-                              <span>{selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'} • {formatBytes(totalBytes)}</span>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+              return (
+                <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+                  <div className="flex flex-col items-center text-center space-y-3.5">
+                    {/* Status Subtitle */}
+                    <div className="flex items-center gap-2 text-xs font-medium text-[#212529]">
+                      <span className="relative flex h-2.5 w-2.5 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fe4543] opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#fe4543]" />
+                      </span>
+                      <span>
+                        {senderStatus === 'waiting_for_receiver' &&
+                          (!cloudPackageReady && cloudUploadPercent > 0
+                            ? `Uploading chunks (${cloudUploadPercent}% • ${formatSpeed(cloudUploadSpeed)})...`
+                            : cloudPackageReady
+                              ? 'Key & Link Ready • Stored for 3 days + Live P2P'
+                              : 'Waiting for receiver to connect...')}
+                        {senderStatus === 'receiver_pending' && `${receiverLabel} joined • Connecting...`}
+                        {senderStatus === 'negotiating' && `Negotiating WebRTC with ${receiverLabel}...`}
+                        {senderStatus === 'awaiting_acceptance' && `Waiting for ${receiverLabel} to accept...`}
+                      </span>
                     </div>
 
-                    {/* Cancel Session Button & Confirmation Drawer */}
-                    <div>
-                      {!showCancelConfirm ? (
+                    {/* Authentic Send Anywhere 6-digit key box */}
+                    <div className="w-full bg-[#fafafa] border border-[#e0e4e6] rounded-xl p-4 sm:p-5 flex flex-col items-center">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={handleCopyCode}
+                        className="my-2 flex items-center justify-center gap-1.5 select-all cursor-pointer group"
+                        title="Click to copy key"
+                      >
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          {digits.slice(0, 3).map((d, i) => (
+                            <span
+                              key={i}
+                              className="sa-key-digit w-9 h-13 sm:w-11 sm:h-15 text-2xl sm:text-3xl font-bold bg-white border border-[#e0e4e6] rounded text-[#212529] font-code flex items-center justify-center shadow-2xs group-hover:border-[#fe4543]/40 transition-colors"
+                            >
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="w-2 sm:w-3" />
+                        <div className="flex items-center gap-1 sm:gap-1.5">
+                          {digits.slice(3, 6).map((d, i) => (
+                            <span
+                              key={i + 3}
+                              className="sa-key-digit w-9 h-13 sm:w-11 sm:h-15 text-2xl sm:text-3xl font-bold bg-white border border-[#e0e4e6] rounded text-[#212529] font-code flex items-center justify-center shadow-2xs group-hover:border-[#fe4543]/40 transition-colors"
+                            >
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Expiration Countdown */}
+                      <div className="flex items-center gap-1 text-xs text-[#9b9b9b] font-medium mt-1">
+                        <span className="material-symbols-outlined text-[15px] text-[#fe4543]">timer</span>
+                        <span>Expires in {formatCountdown(secondsLeft)}</span>
+                      </div>
+
+                      {/* Action Buttons: Copy Key & Copy Link */}
+                      <div className="flex items-center gap-2 mt-3.5 w-full max-w-xs justify-center">
                         <button
                           type="button"
-                          onClick={() => setShowCancelConfirm(true)}
-                          className="w-full flex items-center justify-center gap-2 bg-[#faf8f4] hover:bg-[#ede7dd] text-[#c64545] border border-[#e4ded5] font-semibold text-[13px] h-10 rounded-xl transition-all cursor-pointer"
+                          onClick={handleCopyCode}
+                          disabled={!pairingCode}
+                          className="flex-1 py-2 px-3 rounded-lg bg-white hover:bg-[#f1f1f1] border border-[#e0e4e6] text-xs font-bold text-[#212529] flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
                         >
-                          <span className="material-symbols-outlined text-[17px]">delete_sweep</span>
-                          <span>Cancel Session</span>
+                          <span className="material-symbols-outlined text-[15px] text-[#fe4543]">
+                            {copiedCode ? 'check' : 'content_copy'}
+                          </span>
+                          <span>{copiedCode ? 'Copied!' : 'Copy Key'}</span>
                         </button>
-                      ) : (
-                        <div className="cancel-confirm-box p-3 rounded-xl border border-[#c64545]/20 bg-[#c64545]/5 flex flex-wrap items-center justify-between gap-2 text-xs">
-                          <div className="flex items-center gap-2 text-[#c64545]">
-                            <span className="material-symbols-outlined text-[16px]">warning</span>
-                            <span className="font-medium">Cancel and discard session?</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => setShowCancelConfirm(false)}
-                              className="px-2.5 py-1 rounded-lg bg-white border border-[#e4ded5] hover:bg-[#faf8f4] text-[#141413] text-[11px] font-semibold cursor-pointer"
-                            >
-                              Keep
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleCancelSenderSession}
-                              className="px-2.5 py-1 rounded-lg bg-[#c64545] hover:bg-[#b03a3a] text-white text-[11px] font-semibold shadow-2xs cursor-pointer"
-                            >
-                              Yes, cancel
-                            </button>
+                        <button
+                          type="button"
+                          onClick={handleCopyLink}
+                          disabled={!qrUrl}
+                          className="flex-1 py-2 px-3 rounded-lg bg-[#fe4543] hover:bg-[#d83f53] text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">
+                            {copiedLink ? 'check' : 'link'}
+                          </span>
+                          <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
+                        </button>
+                      </div>
+
+                      {/* QR Section */}
+                      <div className="mt-4 pt-3 border-t border-[#ebebeb] w-full flex flex-col items-center">
+                        <div className="inline-flex p-0.5 rounded-lg bg-[#f1f1f1] border border-[#e0e4e6] mb-2">
+                          <button
+                            type="button"
+                            onClick={() => setQrMode('pairing')}
+                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              qrMode === 'pairing' ? 'bg-white text-[#212529] shadow-2xs' : 'text-[#666666]'
+                            }`}
+                          >
+                            Pairing QR
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQrMode('optical')}
+                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                              qrMode === 'optical' ? 'bg-white text-[#212529] shadow-2xs' : 'text-[#666666]'
+                            }`}
+                          >
+                            Optical Stream
+                          </button>
+                        </div>
+
+                        <div className="p-2 bg-white border border-[#e0e4e6] rounded-lg shadow-2xs">
+                          <div className="w-28 h-28 sm:w-32 sm:h-32 bg-white flex items-center justify-center overflow-hidden">
+                            {qrMode === 'optical' ? (
+                              opticalFrameUrl ? (
+                                <img src={opticalFrameUrl} alt="Optical Stream" className="w-full h-full object-contain" />
+                              ) : (
+                                <div className="flex flex-col items-center gap-1 p-2 text-center">
+                                  <span className="material-symbols-outlined text-lg text-[#fe4543] animate-spin">sync</span>
+                                  <span className="text-[10px] text-[#666666]">Encoding...</span>
+                                </div>
+                              )
+                            ) : qrDataUrl ? (
+                              <img src={qrDataUrl} alt="Session QR" className="w-full h-full object-contain" />
+                            ) : (
+                              <div className="flex flex-col items-center gap-1 p-2 text-center">
+                                <span className="material-symbols-outlined text-lg text-[#fe4543] animate-spin">sync</span>
+                                <span className="text-[10px] text-[#666666]">Generating...</span>
+                              </div>
+                            )}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-
-            {/* STATE 3: TRANSFERRING */}
-            {senderStatus === 'transferring' && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/60 border border-[#e6dfd8] rounded-xl p-4 sm:p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[#6c6a64]">
-                        Sending to {receiverLabel || 'Receiver'}
-                      </p>
-                      <p className="text-lg font-bold text-[#141413] mt-0.5 font-code">
-                        {formatSpeed(senderProgress.speedBytesPerSec)}
-                      </p>
-                    </div>
-                    <span className="text-2xl font-bold font-code text-[#cc785c]">
-                      {Math.round(senderProgress.percent)}%
-                    </span>
-                  </div>
-
-                  <div className="w-full bg-[#e6dfd8] h-2.5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-[#cc785c] transition-all duration-200 rounded-full"
-                      style={{ width: `${Math.min(100, Math.round(senderProgress.percent))}%` }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-[#6c6a64] font-code">
-                    <span>{formatBytes(senderProgress.transferredBytes)} sent</span>
-                    <span>Total: {formatBytes(senderProgress.totalBytes)}</span>
-                  </div>
-
-                  <div className="max-h-32 overflow-y-auto space-y-1.5 pt-2 border-t border-[#e6dfd8]">
-                    {senderFilesProgress.map((fp) => (
-                      <div key={fp.fileId} className="flex items-center justify-between text-xs">
-                        <span className="truncate text-[#141413] font-medium max-w-[65%]">{fp.name}</span>
-                        <span className="font-code text-[#6c6a64]">
-                          {fp.status === 'completed' ? '✓ Sent' : `${Math.round(fp.progressPercent)}%`}
-                        </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                <button
-                  type="button"
-                  onClick={handleCancelSenderSession}
-                  className="w-full flex items-center justify-center gap-2 bg-[#f4f4f0] hover:bg-[#efe9de] text-[#c64545] border border-[#e6dfd8] font-semibold text-[14px] h-11 rounded-xl transition-colors cursor-pointer"
-                >
-                  <span>Cancel Transfer</span>
-                </button>
-              </div>
-            )}
-
-            {/* STATE 4: COMPLETED / FAILED / EXPIRED */}
-            {(senderStatus === 'completed' ||
-              senderStatus === 'failed' ||
-              senderStatus === 'rejected' ||
-              senderStatus === 'expired' ||
-              senderStatus === 'cancelled') && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/50 border border-[#e6dfd8] rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center text-center flex-1 space-y-3">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center border ${
-                      senderStatus === 'completed'
-                        ? 'bg-[#5db872]/15 text-[#5db872] border-[#5db872]/30'
-                        : 'bg-[#c64545]/10 text-[#c64545] border-[#c64545]/30'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[26px]">
-                      {senderStatus === 'completed' ? 'check_circle' : 'error'}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold text-[#141413]">
-                    {senderStatus === 'completed'
-                      ? 'Transfer Completed'
-                      : senderStatus === 'expired'
-                      ? 'Session Code Expired'
-                      : senderStatus === 'rejected'
-                      ? 'Transfer Declined'
-                      : 'Transfer Interrupted'}
-                  </h3>
-                  <p className="text-xs text-[#6c6a64] max-w-sm">
-                    {senderStatus === 'completed'
-                      ? `All ${selectedFiles.length} file(s) (${formatBytes(totalBytes)}) were verified and saved by ${receiverLabel || 'the receiving device'}.`
-                      : 'The session ended before files were transferred. You can start a new session immediately.'}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={senderStatus === 'completed' ? handleResetSender : () => setSenderStatus('created')}
-                  className="w-full flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[15px] h-12 rounded-xl shadow-xs transition-all cursor-pointer"
-                >
-                  <span>{senderStatus === 'completed' ? 'Send More Files' : 'Try Again'}</span>
-                  <span className="material-symbols-outlined text-[18px]">refresh</span>
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ============================================================ */}
-        {/* CONSOLE BODY: RECEIVE TAB PANE                               */}
-        {/* ============================================================ */}
-        {activeTab === 'receive' && (
-          <div className="p-4 sm:p-7 md:p-9 flex flex-col justify-between flex-1 min-h-[20rem] sm:min-h-[23.75rem]">
-            {/* STATE 1: ENTER CODE OR SCAN QR */}
-            {receiverStatus === 'created' && (
-              <>
-                <div className="bg-[#f4f4f0]/40 border border-[#e6dfd8] rounded-xl p-4 sm:p-6 md:p-7 flex flex-col justify-center flex-1 space-y-4 text-left">
-                  <div className="space-y-1">
-                    <p className="text-[13px] sm:text-[14px] font-medium text-[#141413]">
-                      Enter session identifier or scan peer QR code to receive direct stream
-                    </p>
-                    <p className="text-xs text-[#6c6a64]">
-                      Secured via end-to-end WebRTC channels.
-                    </p>
+                      {/* Mascot Track Bar */}
+                      <div className="w-full mt-3 pt-2 border-t border-[#ebebeb]">
+                        <div className="relative w-full h-8 flex items-end">
+                          <div
+                            className="dog-gallop absolute bottom-1 z-10 transition-all duration-300 pointer-events-none"
+                            style={{ left: `${Math.min(94, Math.max(6, mascotPercent))}%`, transform: 'translateX(-50%)' }}
+                          >
+                            <svg width="34" height="22" viewBox="0 0 52 34" fill="none">
+                              <path className="dog-tail-wag" d="M10 14 C6 11, 3 8, 2 5" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
+                              <line className="leg-ba" x1="14" y1="22" x2="11" y2="31" stroke="#d83f53" strokeWidth="3" strokeLinecap="round" />
+                              <line className="leg-bb" x1="18" y1="22" x2="22" y2="31" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
+                              <ellipse cx="23" cy="18" rx="13" ry="7" fill="#fe4543" />
+                              <circle cx="36" cy="11" r="6" fill="#fe4543" />
+                              <path className="dog-ear" d="M34 9 C32 13, 31 18, 33 20" stroke="#b02638" strokeWidth="2.5" strokeLinecap="round" />
+                              <ellipse cx="41" cy="12" rx="4" ry="2.5" fill="#fe4543" />
+                              <circle cx="44.5" cy="11.5" r="1.2" fill="#212529" />
+                              <circle cx="37" cy="9.5" r="1" fill="#212529" />
+                              <rect x="31" y="12" width="2" height="6" rx="1" fill="#ffffff" />
+                              <line className="leg-fa" x1="30" y1="22" x2="35" y2="31" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
+                              <line className="leg-fb" x1="26" y1="22" x2="21" y2="31" stroke="#d83f53" strokeWidth="3" strokeLinecap="round" />
+                            </svg>
+                          </div>
+                          <div className="w-full bg-[#e0e4e6] h-1.5 rounded-full overflow-hidden">
+                            <div className="progress-shimmer h-full rounded-full transition-all duration-300" style={{ width: `${mascotPercent}%` }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* Cancel Button */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#6c6a64] mb-2">
-                      Session Code
-                    </label>
-                    <div className="bg-white border border-[#e6dfd8] rounded-lg px-3.5 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between shadow-xs">
+                    {!showCancelConfirm ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowCancelConfirm(true)}
+                        className="w-full h-10 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">close</span>
+                        <span>Cancel Session</span>
+                      </button>
+                    ) : (
+                      <div className="p-2.5 rounded-lg border border-[#c64545]/20 bg-[#c64545]/5 flex items-center justify-between gap-2 text-xs">
+                        <span className="text-[#c64545] font-semibold">Discard active session?</span>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setShowCancelConfirm(false)}
+                            className="px-2.5 py-1 rounded bg-white border border-[#e0e4e6] font-semibold cursor-pointer"
+                          >
+                            Keep
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleCancelSenderSession}
+                            className="px-2.5 py-1 rounded bg-[#c64545] text-white font-bold cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+          {/* STATE 3: TRANSFERRING */}
+          {senderStatus === 'transferring' && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                      Sending to {receiverLabel || 'Receiver'}
+                    </p>
+                    <p className="text-lg font-bold text-[#212529] mt-0.5 font-code">
+                      {formatSpeed(senderProgress.speedBytesPerSec)}
+                    </p>
+                  </div>
+                  <span className="text-2xl font-bold font-code text-[#fe4543]">
+                    {Math.round(senderProgress.percent)}%
+                  </span>
+                </div>
+
+                <div className="w-full bg-[#e0e4e6] h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#fe4543] transition-all duration-200 rounded-full"
+                    style={{ width: `${Math.min(100, Math.round(senderProgress.percent))}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-[#666666] font-code">
+                  <span>{formatBytes(senderProgress.transferredBytes)} sent</span>
+                  <span>Total: {formatBytes(senderProgress.totalBytes)}</span>
+                </div>
+
+                <div className="max-h-36 overflow-y-auto space-y-1.5 pt-2 border-t border-[#ebebeb]">
+                  {senderFilesProgress.map((fp) => (
+                    <div key={fp.fileId} className="flex items-center justify-between text-xs">
+                      <span className="truncate text-[#212529] font-medium max-w-[65%]">{fp.name}</span>
+                      <span className="font-code text-[#666666]">
+                        {fp.status === 'completed' ? '✓ Sent' : `${Math.round(fp.progressPercent)}%`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCancelSenderSession}
+                className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
+              >
+                <span>Cancel Transfer</span>
+              </button>
+            </div>
+          )}
+
+          {/* STATE 4: COMPLETED / FAILED / EXPIRED */}
+          {(senderStatus === 'completed' ||
+            senderStatus === 'failed' ||
+            senderStatus === 'rejected' ||
+            senderStatus === 'expired' ||
+            senderStatus === 'cancelled') && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-6 flex flex-col items-center justify-center text-center flex-1 space-y-3">
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center border ${
+                    senderStatus === 'completed'
+                      ? 'bg-[#5db872]/15 text-[#5db872] border-[#5db872]/30'
+                      : 'bg-[#c64545]/10 text-[#c64545] border-[#c64545]/30'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[26px]">
+                    {senderStatus === 'completed' ? 'check_circle' : 'error'}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-[#212529]">
+                  {senderStatus === 'completed'
+                    ? 'Transfer Completed'
+                    : senderStatus === 'expired'
+                    ? 'Session Code Expired'
+                    : senderStatus === 'rejected'
+                    ? 'Transfer Declined'
+                    : 'Transfer Interrupted'}
+                </h3>
+                <p className="text-xs text-[#666666] max-w-sm">
+                  {senderStatus === 'completed'
+                    ? `All ${selectedFiles.length} file(s) (${formatBytes(totalBytes)}) were verified and saved by ${receiverLabel || 'the receiving device'}.`
+                    : 'The session ended before files were transferred. You can start a new session immediately.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={senderStatus === 'completed' ? handleResetSender : () => setSenderStatus('created')}
+                className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <span>{senderStatus === 'completed' ? 'Send More Files' : 'Try Again'}</span>
+                <span className="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ============================================================ */}
+        {/* RIGHT CARD: RECEIVE                                           */}
+        {/* ============================================================ */}
+        <div
+          className={`sa-card bg-white rounded-xl border border-[#ebebeb] shadow-[0_4px_20px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300 flex flex-col justify-between p-5 sm:p-7 min-h-[26rem] sm:min-h-[29rem] ${
+            activeTab !== 'receive' ? 'hidden md:flex' : 'flex'
+          }`}
+        >
+          {/* CARD HEADER */}
+          <div className="flex items-center justify-between pb-3.5 border-b border-[#ebebeb]">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#212529]" />
+              <h2 className="text-[18px] sm:text-[20px] font-bold text-[#212529]">
+                {receiverStatus === 'transferring'
+                  ? 'Receiving Files'
+                  : receiverStatus === 'completed'
+                  ? 'Files Received'
+                  : 'Receive'}
+              </h2>
+            </div>
+          </div>
+
+          {/* STATE 1: ENTER KEY OR SCAN QR */}
+          {receiverStatus === 'created' && (
+            <div className="flex-1 flex flex-col justify-between my-2">
+              <div className="space-y-4 my-3">
+                <p className="text-sm text-[#666666]">
+                  Enter the 6-digit key or scan QR to receive files directly.
+                </p>
+
+                {/* Input Form matching Send Anywhere */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#666666]">
+                    Key
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 relative flex items-center">
                       <input
                         ref={sessionCodeInputRef}
                         type="text"
@@ -2181,259 +2152,272 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleReceiveAction();
                         }}
-                        placeholder="e.g. 482-190 or KWM-XQP"
+                        placeholder="Input Key"
                         maxLength={7}
-                        className="font-code text-[18px] sm:text-[20px] font-semibold text-[#141413] tracking-wider uppercase bg-transparent border-none outline-none p-0 w-full focus:ring-0 placeholder:normal-case placeholder:font-normal placeholder:text-[14px] sm:placeholder:text-[15px] placeholder:tracking-normal placeholder:text-[#8e8b82]"
+                        className="w-full h-12 bg-[#f1f1f1] focus:bg-white border border-[#e0e4e6] focus:border-[#fe4543] rounded-lg px-4 font-code text-[18px] sm:text-[20px] font-bold tracking-wider text-[#212529] placeholder:font-normal placeholder:tracking-normal placeholder:text-[14px] placeholder:text-[#9b9b9b] outline-none transition-all"
                       />
-                      <button
-                        type="button"
-                        onClick={handlePasteCode}
-                        title="Paste session code"
-                        className="text-xs px-2.5 py-1 rounded bg-[#f4f4f0] hover:bg-[#e8e0d2] text-[#141413] border border-[#e6dfd8] flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-2"
-                      >
-                        <span className="material-symbols-outlined text-[14px] text-[#cc785c]">content_paste</span>
-                        <span>Paste</span>
-                      </button>
+                      {sessionCode && (
+                        <button
+                          type="button"
+                          onClick={() => setSessionCode('')}
+                          className="absolute right-3 text-[#9b9b9b] hover:text-[#212529] cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-3 pt-0.5">
                     <button
                       type="button"
-                      onClick={() => setIsQRScannerOpen(true)}
-                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-[#efe9de] hover:bg-[#e8e0d2] border border-[#e6dfd8] rounded-lg text-[#141413] text-[13px] font-semibold transition-colors cursor-pointer"
+                      onClick={handlePasteCode}
+                      title="Paste code from clipboard"
+                      className="h-12 px-3 bg-[#fafafa] hover:bg-[#f1f1f1] border border-[#e0e4e6] text-[#212529] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                     >
-                      <span className="material-symbols-outlined text-[18px]">qr_code_scanner</span>
-                      <span>Scan QR</span>
+                      <span className="material-symbols-outlined text-[15px] text-[#fe4543]">content_paste</span>
+                      <span className="hidden sm:inline">Paste</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="pt-4 sm:pt-5">
+                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={handleReceiveAction}
-                    className="w-full flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[15px] h-12 rounded-xl shadow-xs transition-all duration-200 active:scale-[0.99] cursor-pointer"
+                    onClick={() => setIsQRScannerOpen(true)}
+                    className="w-full h-11 bg-[#fafafa] hover:bg-[#f1f1f1] border border-[#e0e4e6] text-[#212529] text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
-                    <span>Connect &amp; Receive</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="material-symbols-outlined text-[18px] text-[#fe4543]">qr_code_scanner</span>
+                    <span>Scan QR Code</span>
                   </button>
                 </div>
-              </>
-            )}
+              </div>
 
-            {/* STATE 2: CONNECTING / NEGOTIATING */}
-            {(receiverStatus === 'receiver_pending' || receiverStatus === 'negotiating') && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/50 border border-[#e6dfd8] rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center text-center flex-1 space-y-3">
-                  <div className="w-10 h-10 border-3 border-[#cc785c] border-t-transparent rounded-full animate-spin" />
-                  <p className="font-semibold text-[#141413] text-sm">
-                    {receiverStatus === 'receiver_pending'
-                      ? 'Validating session code...'
-                      : `Connected to ${senderDeviceLabel || 'Sender'} • Opening direct channel...`}
-                  </p>
-                  <p className="text-xs text-[#6c6a64]">
-                    Exchanging encrypted WebRTC session descriptions.
-                  </p>
-                </div>
-
+              <div className="pt-3">
                 <button
                   type="button"
-                  onClick={handleResetReceiver}
-                  className="w-full flex items-center justify-center gap-2 bg-[#f4f4f0] hover:bg-[#efe9de] text-[#6c6a64] border border-[#e6dfd8] font-semibold text-[14px] h-11 rounded-xl transition-colors cursor-pointer"
+                  onClick={handleReceiveAction}
+                  disabled={!sessionCode.trim()}
+                  className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] disabled:bg-[#f1f1f1] disabled:text-[#9b9b9b] disabled:cursor-not-allowed text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
                 >
-                  <span>Cancel</span>
+                  <span>Receive</span>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* STATE 3: INCOMING TRANSFER APPROVAL */}
-            {receiverStatus === 'awaiting_acceptance' && incomingManifest && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/60 border border-[#e6dfd8] rounded-xl p-4 sm:p-5 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e6dfd8] pb-3">
-                    <div>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-[#cc785c]">
-                        Incoming Transfer Request
-                      </span>
-                      <h4 className="text-sm font-bold text-[#141413]">
-                        From {incomingManifest.senderLabel || senderDeviceLabel || 'Peer Device'}
-                      </h4>
-                    </div>
-                    <span className="text-xs font-code font-semibold text-[#141413] bg-white px-2.5 py-1 rounded-lg border border-[#e6dfd8]">
-                      {incomingManifest.totalFiles} file(s) • {formatBytes(incomingManifest.totalBytes)}
-                    </span>
-                  </div>
-
-                  <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
-                    {incomingManifest.files.map((file) => (
-                      <div
-                        key={file.id}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-[#e6dfd8] text-xs"
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="material-symbols-outlined text-[16px] text-[#cc785c]">draft</span>
-                          <span className="truncate font-medium text-[#141413]">{file.name}</span>
-                        </div>
-                        <span className="font-code text-[#6c6a64] shrink-0 ml-2">{formatBytes(file.size)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={handleDeclineIncomingTransfer}
-                    className="flex items-center justify-center gap-1.5 bg-[#f4f4f0] hover:bg-[#efe9de] text-[#c64545] border border-[#e6dfd8] font-semibold text-[14px] h-12 rounded-xl transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">close</span>
-                    <span>Decline</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleAcceptIncomingTransfer}
-                    className="flex items-center justify-center gap-1.5 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[14px] h-12 rounded-xl shadow-xs transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">download</span>
-                    <span>Accept &amp; Save</span>
-                  </button>
-                </div>
+          {/* STATE 2: CONNECTING / NEGOTIATING */}
+          {(receiverStatus === 'receiver_pending' || receiverStatus === 'negotiating') && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-6 flex flex-col items-center justify-center text-center flex-1 space-y-3">
+                <div className="w-10 h-10 border-3 border-[#fe4543] border-t-transparent rounded-full animate-spin" />
+                <p className="font-bold text-[#212529] text-sm">
+                  {receiverStatus === 'receiver_pending'
+                    ? 'Validating session code...'
+                    : `Connected to ${senderDeviceLabel || 'Sender'} • Opening channel...`}
+                </p>
+                <p className="text-xs text-[#666666]">
+                  Exchanging encrypted WebRTC session descriptions.
+                </p>
               </div>
-            )}
 
-            {/* STATE 4: RECEIVING PROGRESS */}
-            {receiverStatus === 'transferring' && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/60 border border-[#e6dfd8] rounded-xl p-4 sm:p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-[#6c6a64]">
-                        Receiving from {senderDeviceLabel || 'Sender'}
-                      </p>
-                      <p className="text-lg font-bold text-[#141413] mt-0.5 font-code">
-                        {formatSpeed(receiverProgress.speedBytesPerSec)}
-                      </p>
-                    </div>
-                    <span className="text-2xl font-bold font-code text-[#cc785c]">
-                      {Math.round(receiverProgress.percent)}%
+              <button
+                type="button"
+                onClick={handleResetReceiver}
+                className="w-full h-11 bg-[#fafafa] hover:bg-[#f1f1f1] text-[#666666] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
+              >
+                <span>Cancel</span>
+              </button>
+            </div>
+          )}
+
+          {/* STATE 3: INCOMING TRANSFER APPROVAL */}
+          {receiverStatus === 'awaiting_acceptance' && incomingManifest && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ebebeb] pb-2.5">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#fe4543]">
+                      Incoming Transfer
                     </span>
+                    <h4 className="text-sm font-bold text-[#212529]">
+                      From {incomingManifest.senderLabel || senderDeviceLabel || 'Peer Device'}
+                    </h4>
                   </div>
+                  <span className="text-xs font-code font-bold text-[#212529] bg-white px-2.5 py-1 rounded-md border border-[#ebebeb]">
+                    {incomingManifest.totalFiles} file(s) • {formatBytes(incomingManifest.totalBytes)}
+                  </span>
+                </div>
 
-                  <div className="w-full bg-[#e6dfd8] h-2.5 rounded-full overflow-hidden">
+                <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1">
+                  {incomingManifest.files.map((file) => (
                     <div
-                      className="h-full bg-[#cc785c] transition-all duration-200 rounded-full"
-                      style={{ width: `${Math.min(100, Math.round(receiverProgress.percent))}%` }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-[#6c6a64] font-code">
-                    <span>{formatBytes(receiverProgress.transferredBytes)} received</span>
-                    <span>Total: {formatBytes(receiverProgress.totalBytes)}</span>
-                  </div>
-
-                  <div className="max-h-32 overflow-y-auto space-y-1.5 pt-2 border-t border-[#e6dfd8]">
-                    {receivedFiles.map((rf) => (
-                      <div key={rf.fileId} className="flex items-center justify-between text-xs">
-                        <span className="truncate text-[#141413] font-medium max-w-[65%]">{rf.name}</span>
-                        <span className="font-code text-[#6c6a64]">
-                          {rf.status === 'completed' ? '✓ Verified' : `${Math.round(rf.progressPercent)}%`}
-                        </span>
+                      key={file.id}
+                      className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ebebeb] text-xs"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="material-symbols-outlined text-[16px] text-[#fe4543]">draft</span>
+                        <span className="truncate font-medium text-[#212529]">{file.name}</span>
                       </div>
-                    ))}
-                  </div>
+                      <span className="font-code text-[#666666] shrink-0 ml-2">{formatBytes(file.size)}</span>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={handleResetReceiver}
-                  className="w-full flex items-center justify-center gap-2 bg-[#f4f4f0] hover:bg-[#efe9de] text-[#c64545] border border-[#e6dfd8] font-semibold text-[14px] h-11 rounded-xl transition-colors cursor-pointer"
+                  onClick={handleDeclineIncomingTransfer}
+                  className="h-12 bg-[#fafafa] hover:bg-[#f1f1f1] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  <span>Cancel Transfer</span>
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                  <span>Decline</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAcceptIncomingTransfer}
+                  className="sa-btn-primary h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-xs rounded-lg shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-[16px]">download</span>
+                  <span>Accept &amp; Save</span>
                 </button>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* STATE 5: COMPLETED / SAVE FILES */}
-            {receiverStatus === 'completed' && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/60 border border-[#e6dfd8] rounded-xl p-4 sm:p-5 space-y-3">
-                  <div className="flex items-center justify-between border-b border-[#e6dfd8] pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[#5db872] text-[20px]">verified</span>
-                      <span className="text-sm font-bold text-[#141413]">
-                        Files Received &amp; Verified
+          {/* STATE 4: RECEIVING PROGRESS */}
+          {receiverStatus === 'transferring' && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
+                      Receiving from {senderDeviceLabel || 'Sender'}
+                    </p>
+                    <p className="text-lg font-bold text-[#212529] mt-0.5 font-code">
+                      {formatSpeed(receiverProgress.speedBytesPerSec)}
+                    </p>
+                  </div>
+                  <span className="text-2xl font-bold font-code text-[#fe4543]">
+                    {Math.round(receiverProgress.percent)}%
+                  </span>
+                </div>
+
+                <div className="w-full bg-[#e0e4e6] h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#fe4543] transition-all duration-200 rounded-full"
+                    style={{ width: `${Math.min(100, Math.round(receiverProgress.percent))}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-[#666666] font-code">
+                  <span>{formatBytes(receiverProgress.transferredBytes)} received</span>
+                  <span>Total: {formatBytes(receiverProgress.totalBytes)}</span>
+                </div>
+
+                <div className="max-h-36 overflow-y-auto space-y-1.5 pt-2 border-t border-[#ebebeb]">
+                  {receivedFiles.map((rf) => (
+                    <div key={rf.fileId} className="flex items-center justify-between text-xs">
+                      <span className="truncate text-[#212529] font-medium max-w-[65%]">{rf.name}</span>
+                      <span className="font-code text-[#666666]">
+                        {rf.status === 'completed' ? '✓ Verified' : `${Math.round(rf.progressPercent)}%`}
                       </span>
                     </div>
-                    <span className="text-xs font-code text-[#5db872] font-semibold">SHA-256 OK</span>
-                  </div>
+                  ))}
+                </div>
+              </div>
 
-                  <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
-                    {receivedFiles.map((rf) => (
-                      <div
-                        key={rf.fileId}
-                        className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-[#e6dfd8] text-xs"
-                      >
-                        <div className="truncate pr-2">
-                          <p className="font-medium text-[#141413] truncate">{rf.name}</p>
-                          <p className="text-[11px] font-code text-[#6c6a64]">{formatBytes(rf.size)}</p>
-                        </div>
-                        {rf.blob && (
-                          <button
-                            type="button"
-                            onClick={() => triggerBrowserDownload(rf.blob!, rf.name)}
-                            className="px-3 py-1.5 rounded-lg bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-xs flex items-center gap-1 shrink-0 cursor-pointer"
-                          >
-                            <span className="material-symbols-outlined text-[15px]">download</span>
-                            <span>Save</span>
-                          </button>
-                        )}
+              <button
+                type="button"
+                onClick={handleResetReceiver}
+                className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
+              >
+                <span>Cancel Transfer</span>
+              </button>
+            </div>
+          )}
+
+          {/* STATE 5: COMPLETED / SAVE FILES */}
+          {receiverStatus === 'completed' && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-3">
+                <div className="flex items-center justify-between border-b border-[#ebebeb] pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[#5db872] text-[20px]">verified</span>
+                    <span className="text-sm font-bold text-[#212529]">
+                      Files Received &amp; Verified
+                    </span>
+                  </div>
+                  <span className="text-xs font-code text-[#5db872] font-bold">SHA-256 OK</span>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+                  {receivedFiles.map((rf) => (
+                    <div
+                      key={rf.fileId}
+                      className="flex items-center justify-between p-2.5 rounded-lg bg-white border border-[#ebebeb] text-xs"
+                    >
+                      <div className="truncate pr-2">
+                        <p className="font-medium text-[#212529] truncate">{rf.name}</p>
+                        <p className="text-[11px] font-code text-[#666666]">{formatBytes(rf.size)}</p>
                       </div>
-                    ))}
-                  </div>
+                      {rf.blob && (
+                        <button
+                          type="button"
+                          onClick={() => triggerBrowserDownload(rf.blob!, rf.name)}
+                          className="px-3 py-1.5 rounded-lg bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-xs flex items-center gap-1 shrink-0 cursor-pointer transition-colors shadow-2xs"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">download</span>
+                          <span>Save</span>
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleResetReceiver}
-                  className="w-full flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[15px] h-12 rounded-xl shadow-xs transition-all cursor-pointer"
-                >
-                  <span>Receive More Files</span>
-                  <span className="material-symbols-outlined text-[18px]">refresh</span>
-                </button>
               </div>
-            )}
 
-            {/* STATE 6: FAILED / CANCELLED / REJECTED */}
-            {(receiverStatus === 'failed' || receiverStatus === 'cancelled' || receiverStatus === 'rejected') && (
-              <div className="flex-1 flex flex-col justify-between space-y-5">
-                <div className="bg-[#f4f4f0]/50 border border-[#e6dfd8] rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center text-center flex-1 space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-[#c64545]/10 text-[#c64545] border border-[#c64545]/30 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[26px]">error</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-[#141413]">
-                    {receiverStatus === 'cancelled' ? 'Transfer Cancelled' : 'Connection Failed'}
-                  </h3>
-                  <p className="text-xs text-[#6c6a64] max-w-sm">
-                    Could not connect to the session. Please check that the 6-letter session code is active and try again.
-                  </p>
+              <button
+                type="button"
+                onClick={handleResetReceiver}
+                className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <span>Receive More Files</span>
+                <span className="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+          )}
+
+          {/* STATE 6: FAILED / CANCELLED / REJECTED */}
+          {(receiverStatus === 'failed' || receiverStatus === 'cancelled' || receiverStatus === 'rejected') && (
+            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
+              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-6 flex flex-col items-center justify-center text-center flex-1 space-y-3">
+                <div className="w-12 h-12 rounded-full bg-[#c64545]/10 text-[#c64545] border border-[#c64545]/30 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[26px]">error</span>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleResetReceiver}
-                  className="w-full flex items-center justify-center gap-2 bg-[#cc785c] hover:bg-[#b8654a] text-white font-semibold text-[15px] h-12 rounded-xl shadow-xs transition-all cursor-pointer"
-                >
-                  <span>Try Another Code</span>
-                  <span className="material-symbols-outlined text-[18px]">refresh</span>
-                </button>
+                <h3 className="text-lg font-bold text-[#212529]">
+                  {receiverStatus === 'cancelled' ? 'Transfer Cancelled' : 'Connection Failed'}
+                </h3>
+                <p className="text-xs text-[#666666] max-w-sm">
+                  Could not connect to the session. Please check that the 6-digit session key is active and try again.
+                </p>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Refined Telemetry Dock */}
-        <div className="border-t border-[#e6dfd8] bg-[#f4f4f0] text-[#141413] px-3.5 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={handleResetReceiver}
+                className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all"
+              >
+                <span>Try Another Code</span>
+                <span className="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Real-time Telemetry Dock (spanning bottom of cards) */}
+      <div className="w-full max-w-5xl mx-auto mt-6">
+        <div className="sa-card bg-white border border-[#ebebeb] rounded-xl text-[#212529] px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 shadow-xs">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
             <div className="relative flex items-center justify-center shrink-0">
               {isPeerConnected && (
@@ -2443,48 +2427,48 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                 className={`relative inline-flex rounded-full h-2 w-2 ${
                   isPeerConnected
                     ? 'bg-[#5db872] shadow-[0_0_8px_rgba(93,184,114,0.6)]'
-                    : 'bg-[#cc785c]'
+                    : 'bg-[#fe4543]'
                 }`}
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0 truncate">
               <div className="flex items-center gap-1.5 font-sans text-[11px] sm:text-[12px] tracking-tight shrink-0">
-                <span className="text-[#6c6a64] font-medium">{telemetryDeviceSource}</span>
-                <span className="text-[#8e8b82] text-[11px] font-mono">→</span>
+                <span className="text-[#666666] font-medium">{telemetryDeviceSource}</span>
+                <span className="text-[#9b9b9b] text-[11px] font-mono">→</span>
                 <span
-                  className={`font-semibold transition-colors truncate max-w-[110px] sm:max-w-none ${
-                    isPeerConnected ? 'text-[#141413]' : 'text-[#8e8b82]'
+                  className={`font-bold transition-colors truncate max-w-[110px] sm:max-w-none ${
+                    isPeerConnected ? 'text-[#212529]' : 'text-[#9b9b9b]'
                   }`}
                 >
                   {telemetryDeviceTarget}
                 </span>
               </div>
-              <span className="text-[#8e8b82]/50 text-xs">•</span>
-              <span className="inline-flex items-center gap-1 font-code text-[11px] text-[#6c6a64] truncate max-w-[150px] sm:max-w-[240px]">
-                <FileText className="w-3 h-3 text-[#cc785c] shrink-0" />
+              <span className="text-[#9b9b9b]/50 text-xs">•</span>
+              <span className="inline-flex items-center gap-1 font-code text-[11px] text-[#666666] truncate max-w-[150px] sm:max-w-[240px]">
+                <FileText className="w-3 h-3 text-[#fe4543] shrink-0" />
                 <span className="truncate">{telemetryFileName}</span>
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 w-full sm:w-auto">
-            <div className="flex-1 sm:flex-none sm:w-28 bg-[#e6dfd8] h-1.5 rounded-full overflow-hidden p-[0.5px]">
+            <div className="flex-1 sm:flex-none sm:w-28 bg-[#e0e4e6] h-1.5 rounded-full overflow-hidden p-[0.5px]">
               <div
-                className="h-full rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(204,120,92,0.4)]"
+                className="h-full rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(254,69,67,0.4)]"
                 style={{
                   width: `${telemetryPercent}%`,
-                  background: 'linear-gradient(90deg, #b2583e 0%, #cc785c 100%)'
+                  background: 'linear-gradient(90deg, #ff6b69 0%, #fe4543 100%)'
                 }}
               />
             </div>
 
             <div className="flex items-center gap-2 font-code text-[11px] sm:text-[12px] shrink-0">
-              <span className="font-medium text-[#00685a] tracking-tight tabular-nums">
+              <span className="font-bold text-[#00685a] tracking-tight tabular-nums">
                 {telemetryRate}
               </span>
-              <span className="text-[#8e8b82]/60 text-[10px]">/</span>
-              <span className="font-semibold text-[#141413] tabular-nums tracking-tight">
+              <span className="text-[#9b9b9b]/60 text-[10px]">/</span>
+              <span className="font-bold text-[#212529] tabular-nums tracking-tight">
                 {telemetryPercent}%
               </span>
             </div>
