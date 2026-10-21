@@ -93,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                 </svg>
               </div>
               <span className="font-sans font-extrabold text-[19px] tracking-tight text-[#212529] shrink-0 select-none">
-                Send Anywhere
+                SwiftDrop
               </span>
             </button>
 
@@ -135,7 +135,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                     >
                       <Zap className="w-4 h-4 text-[#fe4543]" />
                       <div>
-                        <p className="font-bold">Send Anywhere Basic</p>
+                        <p className="font-bold">SwiftDrop Basic</p>
                         <p className="text-[11px] text-[#9b9b9b]">Direct 6-digit key P2P transfer</p>
                       </div>
                     </button>
@@ -148,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                     >
                       <Cloud className="w-4 h-4 text-[#fe4543]" />
                       <div>
-                        <p className="font-bold">Send Anywhere for Email</p>
+                        <p className="font-bold">SwiftDrop for Email</p>
                         <p className="text-[11px] text-[#9b9b9b]">Outlook &amp; Gmail unlimited attachments</p>
                       </div>
                     </button>
@@ -353,7 +353,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
             <div className="text-center mb-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fff0f2] text-[#fe4543] text-xs font-bold mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Send Anywhere Plus</span>
+                <span>SwiftDrop Plus</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-extrabold text-[#212529]">
                 Choose Your Transfer Power
@@ -407,7 +407,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                 </span>
 
                 <div>
-                  <h4 className="text-lg font-bold text-[#fe4543]">Send Anywhere Plus</h4>
+                  <h4 className="text-lg font-bold text-[#fe4543]">SwiftDrop Plus</h4>
                   <p className="text-2xl font-black text-[#212529] mt-2">
                     $5.99 <span className="text-xs font-normal text-[#9b9b9b]">/ month</span>
                   </p>

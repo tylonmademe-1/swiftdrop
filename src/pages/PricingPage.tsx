@@ -28,7 +28,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
       ]
     },
     {
-      name: 'Send Anywhere Plus',
+      name: 'SwiftDrop Plus',
       tagline: 'Supercharged speed & 1 TB cloud storage',
       price: billingCycle === 'monthly' ? '$5.99' : '$4.99',
       period: billingCycle === 'monthly' ? '/ month' : '/ month (billed yearly)',
@@ -229,7 +229,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({ onNavigate }) => {
               </p>
             </div>
             <div className="p-5 border border-[#ebebeb] rounded-xl bg-white">
-              <h4 className="font-bold text-sm text-[#212529]">What is My Link in Send Anywhere Plus?</h4>
+              <h4 className="font-bold text-sm text-[#212529]">What is My Link in SwiftDrop Plus?</h4>
               <p className="text-xs text-[#666666] mt-1.5 leading-relaxed">
                 My Link provides 1 TB of cloud storage where you can generate shareable download links that don't expire after 48 hours. You can customize expiration, set passwords, and manage download limits.
               </p>

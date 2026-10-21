@@ -1786,7 +1786,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                             <div className="p-2 bg-white border border-[#ebebeb] rounded-xl shadow-xs">
                               <img
                                 src={qrDataUrl}
-                                alt="Send Anywhere QR Code"
+                                alt="SwiftDrop QR Code"
                                 className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
                               />
                             </div>

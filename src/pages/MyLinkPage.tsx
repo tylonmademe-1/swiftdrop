@@ -37,7 +37,7 @@ export const MyLinkPage: React.FC<MyLinkPageProps> = ({ onNavigate }) => {
   ]);
 
   const totalUsedBytes = links.reduce((acc, l) => acc + l.size, 0);
-  const totalQuotaBytes = 1000 * 1024 * 1024 * 1024; // 1 TB (Send Anywhere Plus)
+  const totalQuotaBytes = 1000 * 1024 * 1024 * 1024; // 1 TB (SwiftDrop Plus)
 
   const handleCopyLink = (link: StoredLink) => {
     navigator.clipboard.writeText(link.url);

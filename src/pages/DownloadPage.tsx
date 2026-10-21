@@ -51,7 +51,7 @@ export const DownloadPage: React.FC<DownloadPageProps> = ({ onNavigate }) => {
   const extensions = [
     {
       name: 'Chrome Extension',
-      desc: 'Send Anywhere for Gmail & Web',
+      desc: 'SwiftDrop for Gmail & Web',
       storeUrl: 'https://chrome.google.com/webstore/detail/amjmjholfoknokffkiolahocokcaecnc',
       badge: 'Chrome Web Store'
     },
@@ -72,7 +72,7 @@ export const DownloadPage: React.FC<DownloadPageProps> = ({ onNavigate }) => {
             Available on all platforms
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[#212529] mt-3 tracking-tight">
-            Download <span className="text-[#fe4543]">Send Anywhere</span>
+            Download <span className="text-[#fe4543]">SwiftDrop</span>
           </h1>
           <p className="text-sm text-[#666666] mt-2">
             Send and receive files seamlessly across all your devices without cables or logins.
@@ -184,7 +184,7 @@ export const DownloadPage: React.FC<DownloadPageProps> = ({ onNavigate }) => {
           <div>
             <h3 className="text-lg font-bold text-[#212529]">Want to transfer files without installing?</h3>
             <p className="text-xs text-[#666666] mt-1">
-              Use Send Anywhere directly in your browser with zero installation required.
+              Use SwiftDrop directly in your browser with zero installation required.
             </p>
           </div>
           <button

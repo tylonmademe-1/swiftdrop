@@ -19,7 +19,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             <span className="text-[#fe4543]">wherever you want.</span>
           </h1>
           <p className="text-sm text-[#666666] mt-3 leading-relaxed">
-            Send Anywhere was born from a simple belief: file sharing should be direct, fast, and completely unrestricted by platform, device, or file size.
+            SwiftDrop was born from a simple belief: file sharing should be direct, fast, and completely unrestricted by platform, device, or file size.
           </p>
         </div>
 
@@ -58,9 +58,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
         {/* Story */}
         <div className="p-8 rounded-2xl bg-[#fafafa] border border-[#ebebeb] mb-12">
-          <h2 className="text-xl font-bold text-[#212529] mb-3">The Send Anywhere Story</h2>
+          <h2 className="text-xl font-bold text-[#212529] mb-3">The SwiftDrop Story</h2>
           <p className="text-xs sm:text-sm text-[#666666] leading-relaxed mb-4">
-            Founded by Estmob Inc., Send Anywhere has transferred billions of files across 140+ countries. In an age where files were trapped inside isolated cloud silos and restricted by email attachments, Send Anywhere pioneered the universal 6-digit real-time key exchange.
+            SwiftDrop was engineered to solve file sharing bottlenecks. In an age where files were trapped inside isolated cloud silos and restricted by email attachments, SwiftDrop pioneered direct cryptographic peer-to-peer streaming and the universal 6-digit real-time key exchange.
           </p>
           <p className="text-xs sm:text-sm text-[#666666] leading-relaxed">
             Today, our technology powers direct file transfer for millions of creators, developers, designers, and businesses worldwide.

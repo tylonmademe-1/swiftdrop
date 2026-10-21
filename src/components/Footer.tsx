@@ -50,7 +50,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-[#f1f1f1] text-[11px] text-[#9b9b9b]">
           <div>
-            <span>© 2026 Send Anywhere (Estmob Inc.) All rights reserved.</span>
+            <span>© 2026 SwiftDrop. All rights reserved.</span>
           </div>
           <ul className="flex items-center gap-4 flex-wrap">
             <li>
