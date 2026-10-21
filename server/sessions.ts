@@ -47,7 +47,12 @@ export interface SessionRecord {
 
 const UNAMBIGUOUS_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 
-function generatePairingCode(): string {
+function generatePairingCode(type: 'alpha' | 'numeric' = 'alpha'): string {
+  if (type === 'numeric') {
+    // Send Anywhere style 6-digit numeric key (e.g. "482-190")
+    const num = crypto.randomInt(100000, 1000000).toString();
+    return `${num.slice(0, 3)}-${num.slice(3)}`;
+  }
   const bytes = crypto.randomBytes(6);
   let code = '';
   for (let i = 0; i < 6; i++) {
@@ -113,16 +118,17 @@ export class SessionManager {
     senderWsId: string,
     senderLabel: string,
     manifest?: SessionRecord['manifest'],
-    senderDeviceId?: string
+    senderDeviceId?: string,
+    codeType: 'alpha' | 'numeric' = 'alpha'
   ): SessionRecord {
     const id = crypto.randomUUID();
     const token = crypto.randomBytes(16).toString('hex');
-    let code = generatePairingCode();
+    let code = generatePairingCode(codeType);
 
     // Ensure code uniqueness among active sessions
     let attempts = 0;
     while (this.codeToSessionId.has(code) && attempts < 10) {
-      code = generatePairingCode();
+      code = generatePairingCode(codeType);
       attempts++;
     }
 
@@ -163,7 +169,8 @@ export class SessionManager {
   }
 
   public getSessionByCode(codeRaw: string): SessionRecord | undefined {
-    const clean = codeRaw.replace(/[^A-Za-z]/g, '').toUpperCase();
+    // Send Anywhere support: match both numeric 6-digit keys ("482-190", "482190") and alpha codes ("KWM-XQP")
+    const clean = codeRaw.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     const sessionId = this.codeToSessionId.get(clean);
     if (!sessionId) return undefined;
     return this.getSessionById(sessionId);

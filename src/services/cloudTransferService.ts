@@ -168,7 +168,7 @@ export async function fetchCloudPackageByCode(
   code: string,
   receiverDeviceId: string
 ): Promise<{ found: boolean; manifest?: CloudPackageManifest; selfReceiveBlocked?: boolean; error?: string }> {
-  const cleanCode = code.replace(/[^A-Za-z]/g, '').toUpperCase();
+  const cleanCode = code.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
   const res = await fetch(
     `/api/cloud-transfer/code/${encodeURIComponent(cleanCode)}?deviceId=${encodeURIComponent(receiverDeviceId)}`,
     {

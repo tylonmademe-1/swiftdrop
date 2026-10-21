@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { QRScanner } from '../components/QRScanner';
 import { formatBytes, formatSpeed, getDeviceLabel, getDeviceInstanceId } from '../utils/format';
-import { copyTextToClipboard, readTextFromClipboard, formatAlphaSessionCode } from '../utils/clipboard';
+import { copyTextToClipboard, readTextFromClipboard, formatAlphaSessionCode, formatUniversalSessionCode } from '../utils/clipboard';
 import { useToast } from '../components/Toast';
 import { fetchServerConfig, fetchIceServers } from '../services/configService';
 import { generateQRCode } from '../services/qrService';
@@ -1002,7 +1002,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
         const sessionParam = url.searchParams.get('session');
         const tokenParam = url.searchParams.get('token');
         if (codeParam) {
-          setSessionCode(formatAlphaSessionCode(codeParam));
+          setSessionCode(formatUniversalSessionCode(codeParam));
         }
         if (sessionParam && tokenParam) {
           connectToSenderSession({ sessionId: sessionParam, token: tokenParam, code: codeParam || undefined });
@@ -1017,7 +1017,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
       // Not a URL
     }
 
-    const formatted = formatAlphaSessionCode(text);
+    const formatted = formatUniversalSessionCode(text);
     if (formatted) {
       setSessionCode(formatted);
       return true;
@@ -2169,7 +2169,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                         value={sessionCode}
                         onChange={(e) => {
                           const raw = e.target.value;
-                          setSessionCode((prev) => formatAlphaSessionCode(raw, prev));
+                          setSessionCode((prev) => formatUniversalSessionCode(raw, prev));
                         }}
                         onPaste={(e) => {
                           e.preventDefault();
@@ -2181,7 +2181,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handleReceiveAction();
                         }}
-                        placeholder="e.g. KWM-XQP"
+                        placeholder="e.g. 482-190 or KWM-XQP"
                         maxLength={7}
                         className="font-code text-[18px] sm:text-[20px] font-semibold text-[#141413] tracking-wider uppercase bg-transparent border-none outline-none p-0 w-full focus:ring-0 placeholder:normal-case placeholder:font-normal placeholder:text-[14px] sm:placeholder:text-[15px] placeholder:tracking-normal placeholder:text-[#8e8b82]"
                       />

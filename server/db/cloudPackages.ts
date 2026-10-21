@@ -49,7 +49,7 @@ export class CloudPackageRepository {
 
   private generateUniqueAlphaCode(preferredCode?: string): string {
     if (preferredCode) {
-      const clean = preferredCode.replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 6);
+      const clean = preferredCode.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
       if (clean.length === 6) {
         const existing = this.db
           .prepare('SELECT id, status, expires_at FROM cloud_packages WHERE code = ?')
@@ -290,7 +290,7 @@ export class CloudPackageRepository {
     formattedCode: string;
     files: CloudPackageFileRow[];
   } | null {
-    const clean = code.replace(/[^A-Za-z]/g, '').toUpperCase();
+    const clean = code.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     if (!clean) return null;
 
     const pkg = this.db

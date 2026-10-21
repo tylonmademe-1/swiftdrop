@@ -98,4 +98,16 @@ describe('SessionManager', () => {
     const expiredLookup = sessionManager.getSessionByCode(code);
     expect(expiredLookup).toBeUndefined();
   });
+
+  it('supports Send Anywhere style 6-digit numeric keys and resolves cleanly', () => {
+    const numericSession = sessionManager.createSession('ws-sender-num', 'Pixel 9', undefined, undefined, 'numeric');
+    expect(numericSession.code).toMatch(/^[0-9]{3}-[0-9]{3}$/);
+
+    const lookupFormatted = sessionManager.getSessionByCode(numericSession.code);
+    expect(lookupFormatted?.id).toBe(numericSession.id);
+
+    const plain = numericSession.code.replace('-', '');
+    const lookupPlain = sessionManager.getSessionByCode(plain);
+    expect(lookupPlain?.id).toBe(numericSession.id);
+  });
 });

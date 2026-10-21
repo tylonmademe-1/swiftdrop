@@ -82,7 +82,8 @@ export function setupSignaling(wss: WebSocketServer, sessionManager: SessionMana
           const senderLabel = msg.senderLabel || msg.payload?.senderLabel || 'Sender';
           const senderDeviceId = msg.deviceId || msg.payload?.deviceId;
           const manifest = msg.manifest || msg.payload?.manifest;
-          const session = sessionManager.createSession(wsId, senderLabel, manifest, senderDeviceId);
+          const codeType = msg.codeType || msg.payload?.codeType || 'numeric'; // Default to Send Anywhere 6-digit numeric key
+          const session = sessionManager.createSession(wsId, senderLabel, manifest, senderDeviceId, codeType);
           client.sessionId = session.id;
           client.role = 'sender';
 

@@ -1,6 +1,37 @@
 const LOCAL_CLIPBOARD_KEY = 'swiftdrop_clipboard_text';
 
 /**
+ * Send Anywhere style Universal Session Code Formatter.
+ * Accepts both 6-Digit Numeric Keys (e.g. "482-190" or "482 190")
+ * and Alpha Codes (e.g. "KWM-XQP").
+ * Automatically inserts a hyphen after 3 characters.
+ */
+export function formatUniversalSessionCode(raw: string, previousValue = ''): string {
+  // Keep alphanumeric characters (0-9 and A-Z)
+  const charsOnly = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 6);
+
+  if (charsOnly.length === 0) {
+    return '';
+  }
+
+  const isDeleting = raw.length < previousValue.length;
+
+  if (charsOnly.length < 3) {
+    return charsOnly;
+  }
+
+  if (charsOnly.length === 3) {
+    const endsWithSep = /[-\s]$/.test(raw);
+    if (endsWithSep && !isDeleting) {
+      return `${charsOnly}-`;
+    }
+    return charsOnly;
+  }
+
+  return `${charsOnly.slice(0, 3)}-${charsOnly.slice(3)}`;
+}
+
+/**
  * Formats any input string into an uppercase letters-only Session Code (e.g. "KWM-XQP").
  * - Strips all numbers (0-9) and special characters
  * - Converts all letters to uppercase (A-Z)
