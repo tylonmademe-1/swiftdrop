@@ -1586,12 +1586,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
   return (
     <div className="w-full flex-1 flex flex-col items-center px-3 sm:px-6 md:px-8 py-5 sm:py-8 md:py-12 sm:my-auto">
       {/* Send Anywhere Style Hero Header */}
-      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9 space-y-1 sm:space-y-2 px-1">
-        <h1 className="text-2xl sm:text-4xl md:text-[40px] font-extrabold tracking-tight text-[#212529] leading-tight font-sans">
-          Easy, fast and unlimited <span className="text-[#fe4543]">file transfer</span>
+      <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-9 space-y-1.5 px-1">
+        <h1 className="text-2xl sm:text-4xl md:text-[38px] font-extrabold tracking-tight text-[#212529] leading-tight font-sans">
+          Send whatever you want, <span className="text-[#fe4543]">wherever you want</span>
         </h1>
-        <p className="text-xs sm:text-[14px] text-[#666666] font-normal">
-          Direct device-to-device streaming up to 50 GB with temporary 6-digit key.
+        <p className="text-xs sm:text-[15px] text-[#666666] font-medium">
+          Easy, quick, and unlimited file sharing
         </p>
       </div>
 
@@ -2532,67 +2532,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
               </button>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Real-time Telemetry Dock (spanning bottom of cards) */}
-      <div className="w-full max-w-5xl mx-auto mt-6">
-        <div className="sa-card bg-white border border-[#ebebeb] rounded-xl text-[#212529] px-4 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 shadow-xs">
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="relative flex items-center justify-center shrink-0">
-              {isPeerConnected && (
-                <span className="absolute inline-flex h-3 w-3 rounded-full bg-[#5db872]/20 animate-ping" />
-              )}
-              <span
-                className={`relative inline-flex rounded-full h-2 w-2 ${
-                  isPeerConnected
-                    ? 'bg-[#5db872] shadow-[0_0_8px_rgba(93,184,114,0.6)]'
-                    : 'bg-[#fe4543]'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0 truncate">
-              <div className="flex items-center gap-1.5 font-sans text-[11px] sm:text-[12px] tracking-tight shrink-0">
-                <span className="text-[#666666] font-medium">{telemetryDeviceSource}</span>
-                <span className="text-[#9b9b9b] text-[11px] font-mono">→</span>
-                <span
-                  className={`font-bold transition-colors truncate max-w-[110px] sm:max-w-none ${
-                    isPeerConnected ? 'text-[#212529]' : 'text-[#9b9b9b]'
-                  }`}
-                >
-                  {telemetryDeviceTarget}
-                </span>
-              </div>
-              <span className="text-[#9b9b9b]/50 text-xs">•</span>
-              <span className="inline-flex items-center gap-1 font-code text-[11px] text-[#666666] truncate max-w-[150px] sm:max-w-[240px]">
-                <FileText className="w-3 h-3 text-[#fe4543] shrink-0" />
-                <span className="truncate">{telemetryFileName}</span>
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 w-full sm:w-auto">
-            <div className="flex-1 sm:flex-none sm:w-28 bg-[#e0e4e6] h-1.5 rounded-full overflow-hidden p-[0.5px]">
-              <div
-                className="h-full rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(254,69,67,0.4)]"
-                style={{
-                  width: `${telemetryPercent}%`,
-                  background: 'linear-gradient(90deg, #ff6b69 0%, #fe4543 100%)'
-                }}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 font-code text-[11px] sm:text-[12px] shrink-0">
-              <span className="font-bold text-[#00685a] tracking-tight tabular-nums">
-                {telemetryRate}
-              </span>
-              <span className="text-[#9b9b9b]/60 text-[10px]">/</span>
-              <span className="font-bold text-[#212529] tabular-nums tracking-tight">
-                {telemetryPercent}%
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 

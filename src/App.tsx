@@ -124,14 +124,14 @@ function MainApp() {
   };
 
   return (
-    <div className="w-full min-h-screen min-h-[100dvh] bg-[#faf9f5] text-[#1b1c1a] flex flex-col font-sans selection:bg-[#ffdbd0] selection:text-[#390c00]">
+    <div className="w-full min-h-screen min-h-[100dvh] bg-white text-[#212529] flex flex-col font-sans selection:bg-[#fff0f2] selection:text-[#fe4543]">
       <Header
         currentTab={currentRoute}
         onNavigate={navigateTo}
         onOpenHelp={() => setIsHelpOpen(true)}
       />
 
-      <main className="w-full pt-28 sm:pt-32 md:pt-24 bg-[#faf9f5] flex-1 flex flex-col">
+      <main className="w-full pt-16 bg-white flex-1 flex flex-col">
         {renderRoute()}
       </main>
 
