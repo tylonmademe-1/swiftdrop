@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 
 export default defineConfig(() => {
   return {
-    base: './',
+    base: process.env.VERCEL ? '/' : './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
