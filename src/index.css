@@ -313,21 +313,59 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
+/* Authentic Send Anywhere Primary CTA Button */
 .sa-btn-primary {
   background-color: #fe4543;
   color: #ffffff;
   font-weight: 700;
-  border-radius: 6px;
-  transition: all 0.15s ease-in-out;
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  transition: box-shadow ease-in-out 0.2s, background-color ease-in-out 0.2s, transform ease-in-out 0.15s;
 }
 
 .sa-btn-primary:hover:not(:disabled) {
   background-color: #d83f53;
-  box-shadow: 0 4px 12px rgba(254, 69, 67, 0.25);
+  box-shadow: 4px 4px 8px rgba(254, 69, 67, 0.35);
 }
 
 .sa-btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
+  background-color: #ce3c4f;
+  box-shadow: 2px 2px 4px rgba(254, 69, 67, 0.35);
+  transform: scale(0.99);
+}
+
+.sa-btn-primary:disabled {
+  background-color: #eeeeee;
+  color: #aaaaaa;
+  cursor: not-allowed;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+/* Authentic Send Anywhere Secondary Button */
+.sa-btn-secondary {
+  background-color: #ffffff;
+  border: 1px solid #e0e4e6;
+  color: #212529;
+  font-weight: 600;
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+  transition: box-shadow ease-in-out 0.2s, background-color ease-in-out 0.2s, border-color ease-in-out 0.2s, transform ease-in-out 0.15s;
+}
+
+.sa-btn-secondary:hover:not(:disabled) {
+  background-color: #f2f2f2;
+  border-color: #d0d4d7;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.sa-btn-secondary:active:not(:disabled) {
+  background-color: #e6e6e6;
+  box-shadow: none;
+  transform: scale(0.99);
 }
 
 /* Plus button for file drop */
@@ -347,9 +385,17 @@
   background-color: #fe4543;
   color: #ffffff;
   transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(254, 69, 67, 0.3);
 }
 
 /* 6-Digit Key Box (Send Anywhere Waiting Screen) */
+.sa-key-box {
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .sa-key-digit {
   width: 44px;
   height: 60px;
@@ -366,4 +412,40 @@
   justify-content: center;
   font-family: var(--font-code);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all ease-in-out 0.2s;
+}
+
+.sa-key-box:hover .sa-key-digit {
+  border-color: rgba(254, 69, 67, 0.4);
+  background-color: #ffffff;
+}
+
+/* Receive Key Input styling matching Send Anywhere */
+.sa-receive-input {
+  width: 100%;
+  height: 48px;
+  padding-left: 16px;
+  padding-right: 40px;
+  border-radius: 4px;
+  background-color: #f1f1f1;
+  border: 1px solid #f1f1f1;
+  font-size: 18px;
+  font-weight: 700;
+  color: #212529;
+  transition: all ease-in-out 0.2s;
+}
+
+.sa-receive-input:focus, .sa-receive-input.active {
+  background-color: #ffffff;
+  border-color: #fe4543;
+  box-shadow: 0 0 0 2px rgba(254, 69, 67, 0.15);
+}
+
+/* File list item with hover transitions */
+.sa-file-item {
+  transition: all ease-in-out 0.2s;
+}
+.sa-file-item:hover {
+  background-color: #f8f9fa;
+  border-color: rgba(254, 69, 67, 0.3);
 }

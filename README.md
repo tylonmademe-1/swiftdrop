@@ -171,6 +171,47 @@ SwiftDrop distinguishes receiving file data from saving it to persistent storage
 - SHA-256 integrity results.
 - Saved-to-disk status when it can be reliably confirmed.
 
+### 50 GB Large File Coalescing Engine
+
+SwiftDrop supports high-capacity single-file and batch transfers up to 50 GB and 100 files per session.
+
+- **V8 Heap Flatlining:** Rather than keeping millions of micro-chunks as loose `ArrayBuffer` objects in JavaScript memory (which triggers OOM browser crashes on multi-gigabyte transfers), SwiftDrop coalesces incoming chunks into native Blob segments every 128 chunks (8 MiB).
+- **Sub-30MB Heap Footprint:** Active browser JavaScript heap memory remains flat under 30 MB regardless of file size, streaming directly to disk via browser Blob storage.
+- **Backpressure Regulation:** Proactively monitors `dataChannel.bufferedAmountLowThreshold` to prevent network buffer overflow and packet drops.
+
+### Universal 6-Digit Key Exchange
+
+Inspired by the Send Anywhere protocol, SwiftDrop implements a universal 6-digit numeric pairing key system.
+
+- **Human-Friendly 6-Digit Keys:** Generates random 6-digit numeric access codes (e.g., `482 190` or `482-190`) with an automatic 3-digit gap layout.
+- **Backward Compatibility:** Seamlessly resolves both 6-digit numeric keys and legacy 6-character base32 alphanumeric codes (`KWM-XQP`).
+- **Cryptographic Ephemerality:** Keys expire automatically after 5 to 10 minutes and self-destruct upon single-use redemption.
+
+### Send Anywhere Dual-Card UI/UX
+
+SwiftDrop features a dedicated design system reverse-engineered from Send Anywhere:
+
+- **Dual-Card Desktop Architecture:** On desktop displays, the **Send** and **Receive** cards sit side-by-side in a responsive 2-column console, allowing users to drop files or enter keys without toggling tabs.
+- **Responsive Mobile Single-Card Mode:** On compact mobile devices, an adaptive segmented pill toggles cleanly between Send and Receive.
+- **Iconic Visual Elements:** Includes the Send Anywhere signature `#fe4543` colorway, circular `+` file dropzone (`.sa-plus-btn`), 6-digit separate digit block boxes (`.sa-key-digit`), and smooth elevation shadows.
+- **Typography:** Uses clean, modern `Roboto` and `Inter` sans-serif fonts with monospaced tabular numerals.
+
+### Hybrid Store-and-Forward Fallback
+
+When peers cannot be online at the exact same moment for real-time WebRTC peer streaming:
+
+- **Chunked 5MB Background Staging:** Files upload in 5MB sequential chunks directly to secure staging storage.
+- **3-Day Link Retention:** Generates temporary download links and pairing keys valid for up to 3 days.
+- **Automatic Dual-Mode:** Peers that connect concurrently stream directly via peer-to-peer WebRTC; offline peers download from the staged package.
+
+### Optical QRFerry Frame Streaming
+
+For air-gapped, zero-radio, or offline environments:
+
+- **Animated QR Stream:** Streams binary file data as an animated sequence of high-density QR frames.
+- **Camera-Based Ingestion:** The receiving device captures frames using its camera without Wi-Fi, Bluetooth, cellular, or server signaling.
+- **Checksum Verification:** Frames are individually sequence-checked and SHA-256 verified.
+
 ---
 
 ## 04 — Sender, Receiver & Pairing Workflow
@@ -273,10 +314,10 @@ SwiftDrop separates application logic, signaling, persistent storage, and file t
 
 | Layer | Technology |
 |---|---|
-| Frontend | Vite-based web application |
+| Frontend | Vite-based web application with Roboto typography and Send Anywhere dual-card UI/UX |
 | Backend | Node.js and Express |
 | Signaling | WebSocket |
-| File transport | WebRTC DataChannels |
+| File transport | WebRTC DataChannels (up to 50 GB with native Blob coalescing) |
 | Transport security | DTLS through WebRTC |
 | Connectivity | ICE with STUN/TURN |
 | Persistent storage | SQLite |
@@ -284,6 +325,8 @@ SwiftDrop separates application logic, signaling, persistent storage, and file t
 | Authentication | Scrypt password hashing and secure session cookies |
 | Integrity verification | SHA-256 |
 | Stream compression | Compression Streams API |
+| Cloud Fallback | 5MB chunked store-and-forward staging (3-day retention) |
+| Air-Gapped Mode | QRFerry optical QR frame streaming |
 
 ### Transport Model
 
