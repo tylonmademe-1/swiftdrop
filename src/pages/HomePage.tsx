@@ -23,6 +23,7 @@ import {
   OverallTransferProgress,
   FileTransferProgress
 } from '../types/transfer';
+import { formatSpeedRate, formatEta } from '../services/speedEngine';
 import { Plus, ArrowRight, ArrowLeft, FileText, X, Key, QrCode, Zap, Link, Mail, Globe, Check } from 'lucide-react';
 
 interface HomePageProps {
@@ -2033,55 +2034,95 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
               );
             })()}
 
-          {/* STATE 3: TRANSFERRING */}
+          {/* STATE 3: TRANSFERRING (SEND ANYWHERE AUTHENTIC LAYOUT) */}
           {senderStatus === 'transferring' && (
-            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
-              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
-                      Sending to {receiverLabel || 'Receiver'}
-                    </p>
-                    <p className="text-lg font-bold text-[#212529] mt-0.5 font-code">
-                      {formatSpeed(senderProgress.speedBytesPerSec)}
-                    </p>
+            <div className="transfer-box-inner flex-1 flex flex-col justify-between my-2">
+              <div>
+                <div className="send-transfer-header flex items-center justify-between mb-3">
+                  <h3 className="title3 bold text-[17px] font-bold text-[#212529]">
+                    Sending Files
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleCancelSenderSession}
+                    className="text-button gray text-xs text-[#9b9b9b] hover:text-[#fe4543] font-medium cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* File summary item */}
+                <div className="FileItem flex items-center justify-between py-2.5 px-3 bg-[#fafafa] border border-[#ebebeb] rounded-lg mb-4 text-xs">
+                  <div className="flex items-center gap-2 truncate max-w-[70%]">
+                    <FileText className="w-4 h-4 text-[#fe4543] shrink-0" />
+                    <span className="file-name font-bold text-[#212529] truncate" title={selectedFiles[0]?.name}>
+                      {selectedFiles.length === 1 ? selectedFiles[0]?.name : `${selectedFiles.length} files`}
+                    </span>
                   </div>
-                  <span className="text-2xl font-bold font-code text-[#fe4543]">
-                    {Math.round(senderProgress.percent)}%
+                  <span className="file-size text-[#9b9b9b] font-code shrink-0">
+                    {formatBytes(senderProgress.totalBytes)}
                   </span>
                 </div>
 
-                <div className="w-full bg-[#e0e4e6] h-2.5 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#fe4543] transition-all duration-200 rounded-full"
-                    style={{ width: `${Math.min(100, Math.round(senderProgress.percent))}%` }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-[#666666] font-code">
-                  <span>{formatBytes(senderProgress.transferredBytes)} sent</span>
-                  <span>Total: {formatBytes(senderProgress.totalBytes)}</span>
-                </div>
-
-                <div className="max-h-36 overflow-y-auto space-y-1.5 pt-2 border-t border-[#ebebeb]">
-                  {senderFilesProgress.map((fp) => (
-                    <div key={fp.fileId} className="flex items-center justify-between text-xs">
-                      <span className="truncate text-[#212529] font-medium max-w-[65%]">{fp.name}</span>
-                      <span className="font-code text-[#666666]">
-                        {fp.status === 'completed' ? '✓ Sent' : `${Math.round(fp.progressPercent)}%`}
-                      </span>
+                {/* Send Anywhere Signature BarProgress */}
+                <div className="BarProgress my-3">
+                  <div className="progress-container">
+                    <div
+                      className="progress"
+                      style={{ width: `${Math.min(100, Math.round(senderProgress.percent))}%` }}
+                    >
+                      <div className={`progress-text ${Math.round(senderProgress.percent) > 18 ? 'fr' : ''}`}>
+                        {Math.round(senderProgress.percent)}%
+                      </div>
                     </div>
-                  ))}
+                    <div className="progress-text shadow" aria-hidden="true">
+                      {Math.round(senderProgress.percent)}%
+                    </div>
+                  </div>
                 </div>
+
+                {/* FooterProgressV2 with live speed rate, ETA, and TransferSize */}
+                <div className="FooterProgressV2 flex items-center justify-between text-xs mt-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-[#212529]">
+                      {formatSpeedRate(senderProgress.speedBytesPerSec)}
+                    </span>
+                    <span className="text-[#9b9b9b]">
+                      • {formatEta(senderProgress.etaSeconds)}
+                    </span>
+                  </div>
+                  <div className="TransferSize text-xs font-code">
+                    <span className="loaded-bytes highlight text-[#fe4543] font-bold">
+                      {formatBytes(senderProgress.transferredBytes)}
+                    </span>
+                    <span className="text-[#9b9b9b]"> / {formatBytes(senderProgress.totalBytes)}</span>
+                  </div>
+                </div>
+
+                {/* Multi-file list if more than 1 file */}
+                {senderFilesProgress.length > 1 && (
+                  <div className="max-h-36 overflow-y-auto mt-4 divide-y divide-[#f1f1f1] border-t border-[#ebebeb] pt-2">
+                    {senderFilesProgress.map((fp) => (
+                      <div key={fp.fileId} className="flex items-center justify-between py-1.5 text-xs">
+                        <span className="truncate text-[#666666] max-w-[65%]" title={fp.name}>{fp.name}</span>
+                        <span className="font-code text-[#9b9b9b]">
+                          {fp.status === 'completed' ? '✓ Sent' : `${Math.round(fp.progressPercent)}%`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <button
-                type="button"
-                onClick={handleCancelSenderSession}
-                className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
-              >
-                <span>Cancel Transfer</span>
-              </button>
+              <div className="pt-3">
+                <button
+                  type="button"
+                  onClick={handleCancelSenderSession}
+                  className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#9b9b9b] hover:text-[#fe4543] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
 
@@ -2324,55 +2365,95 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
             </div>
           )}
 
-          {/* STATE 4: RECEIVING PROGRESS */}
+          {/* STATE 4: RECEIVING PROGRESS (SEND ANYWHERE AUTHENTIC LAYOUT) */}
           {receiverStatus === 'transferring' && (
-            <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
-              <div className="bg-[#fafafa] border border-[#ebebeb] rounded-xl p-4 sm:p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-[#666666]">
-                      Receiving from {senderDeviceLabel || 'Sender'}
-                    </p>
-                    <p className="text-lg font-bold text-[#212529] mt-0.5 font-code">
-                      {formatSpeed(receiverProgress.speedBytesPerSec)}
-                    </p>
+            <div className="transfer-box-inner flex-1 flex flex-col justify-between my-2">
+              <div>
+                <div className="receive-transfer-header flex items-center justify-between mb-3">
+                  <h3 className="title3 bold text-[17px] font-bold text-[#212529]">
+                    Receiving Files
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={handleResetReceiver}
+                    className="text-button gray text-xs text-[#9b9b9b] hover:text-[#fe4543] font-medium cursor-pointer transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                {/* File summary item */}
+                <div className="FileItem flex items-center justify-between py-2.5 px-3 bg-[#fafafa] border border-[#ebebeb] rounded-lg mb-4 text-xs">
+                  <div className="flex items-center gap-2 truncate max-w-[70%]">
+                    <FileText className="w-4 h-4 text-[#fe4543] shrink-0" />
+                    <span className="file-name font-bold text-[#212529] truncate" title={receivedFiles[0]?.name}>
+                      {receivedFiles.length === 1 ? receivedFiles[0]?.name : `${receivedFiles.length} files`}
+                    </span>
                   </div>
-                  <span className="text-2xl font-bold font-code text-[#fe4543]">
-                    {Math.round(receiverProgress.percent)}%
+                  <span className="file-size text-[#9b9b9b] font-code shrink-0">
+                    {formatBytes(receiverProgress.totalBytes)}
                   </span>
                 </div>
 
-                <div className="w-full bg-[#e0e4e6] h-2.5 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#fe4543] transition-all duration-200 rounded-full"
-                    style={{ width: `${Math.min(100, Math.round(receiverProgress.percent))}%` }}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-[#666666] font-code">
-                  <span>{formatBytes(receiverProgress.transferredBytes)} received</span>
-                  <span>Total: {formatBytes(receiverProgress.totalBytes)}</span>
-                </div>
-
-                <div className="max-h-36 overflow-y-auto space-y-1.5 pt-2 border-t border-[#ebebeb]">
-                  {receivedFiles.map((rf) => (
-                    <div key={rf.fileId} className="flex items-center justify-between text-xs">
-                      <span className="truncate text-[#212529] font-medium max-w-[65%]">{rf.name}</span>
-                      <span className="font-code text-[#666666]">
-                        {rf.status === 'completed' ? '✓ Verified' : `${Math.round(rf.progressPercent)}%`}
-                      </span>
+                {/* Send Anywhere Signature BarProgress */}
+                <div className="BarProgress my-3">
+                  <div className="progress-container">
+                    <div
+                      className="progress"
+                      style={{ width: `${Math.min(100, Math.round(receiverProgress.percent))}%` }}
+                    >
+                      <div className={`progress-text ${Math.round(receiverProgress.percent) > 18 ? 'fr' : ''}`}>
+                        {Math.round(receiverProgress.percent)}%
+                      </div>
                     </div>
-                  ))}
+                    <div className="progress-text shadow" aria-hidden="true">
+                      {Math.round(receiverProgress.percent)}%
+                    </div>
+                  </div>
                 </div>
+
+                {/* FooterProgressV2 with live speed rate, ETA, and TransferSize */}
+                <div className="FooterProgressV2 flex items-center justify-between text-xs mt-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-[#212529]">
+                      {formatSpeedRate(receiverProgress.speedBytesPerSec)}
+                    </span>
+                    <span className="text-[#9b9b9b]">
+                      • {formatEta(receiverProgress.etaSeconds)}
+                    </span>
+                  </div>
+                  <div className="TransferSize text-xs font-code">
+                    <span className="loaded-bytes highlight text-[#fe4543] font-bold">
+                      {formatBytes(receiverProgress.transferredBytes)}
+                    </span>
+                    <span className="text-[#9b9b9b]"> / {formatBytes(receiverProgress.totalBytes)}</span>
+                  </div>
+                </div>
+
+                {/* Multi-file list if more than 1 file */}
+                {receivedFiles.length > 1 && (
+                  <div className="max-h-36 overflow-y-auto mt-4 divide-y divide-[#f1f1f1] border-t border-[#ebebeb] pt-2">
+                    {receivedFiles.map((rf) => (
+                      <div key={rf.fileId} className="flex items-center justify-between py-1.5 text-xs">
+                        <span className="truncate text-[#666666] max-w-[65%]" title={rf.name}>{rf.name}</span>
+                        <span className="font-code text-[#9b9b9b]">
+                          {rf.status === 'completed' ? '✓ Verified' : `${Math.round(rf.progressPercent)}%`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <button
-                type="button"
-                onClick={handleResetReceiver}
-                className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
-              >
-                <span>Cancel Transfer</span>
-              </button>
+              <div className="pt-3">
+                <button
+                  type="button"
+                  onClick={handleResetReceiver}
+                  className="w-full h-11 bg-[#fafafa] hover:bg-[#fff0f2] text-[#9b9b9b] hover:text-[#fe4543] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
 

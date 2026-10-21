@@ -449,3 +449,107 @@
   background-color: #f8f9fa;
   border-color: rgba(254, 69, 67, 0.3);
 }
+
+/* Send Anywhere Exact Transfer BarProgress & Gauges */
+.BarProgress {
+  margin: auto;
+  width: 100%;
+}
+
+.BarProgress > .progress-container {
+  border-radius: 17px;
+  height: 28px;
+  background-color: #f1f1f1;
+  overflow: hidden;
+  position: relative;
+}
+
+.BarProgress > .progress-container .progress-text {
+  box-sizing: border-box;
+  line-height: 28px;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.BarProgress > .progress-container .progress-text.shadow {
+  color: #9b9b9b;
+}
+
+.BarProgress > .progress-container > .progress {
+  background-color: #fe4543;
+  width: 0;
+  height: 100%;
+  border-radius: 17px;
+  transition: width 0.15s ease-in-out;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.BarProgress > .progress-container > .progress > .progress-text {
+  color: #ffffff;
+}
+
+.BarProgress > .progress-container > .progress > .progress-text.fr {
+  left: auto;
+  right: 0;
+}
+
+.FooterProgressV2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.FooterProgressV2 .file-count {
+  color: #9b9b9b;
+  font-weight: 500;
+}
+
+.FooterProgressV2 .TransferSize {
+  color: #9b9b9b;
+  font-weight: 500;
+  text-align: right;
+}
+
+.FooterProgressV2 .TransferSize .highlight {
+  color: #fe4543;
+  font-weight: 700;
+}
+
+.send-transfer-header, .receive-transfer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.send-transfer-header h3, .receive-transfer-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.text-button.gray {
+  background: none;
+  border: none;
+  color: #9b9b9b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 6px;
+  transition: color 0.15s ease;
+}
+
+.text-button.gray:hover {
+  color: #fe4543;
+}
+

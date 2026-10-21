@@ -1,6 +1,7 @@
 import { FileMetadata, FileTransferProgress, OverallTransferProgress, AccelerationSettings } from '../types/transfer';
 import { computeFileHash } from '../utils/crypto';
 import { isCompressibleFile, compressBlob, decompressBlob } from '../utils/compression';
+import { Speedometer, getOptimalConnections, DEFAULT_CHUNK_SIZE } from './speedEngine';
 
 const MAGIC_NUMBER = 0x53574644; // "SWFD" in hex
 const HEADER_SIZE = 16;
@@ -49,6 +50,7 @@ export class FileTransferService {
   private transferredBytes = 0;
   private effectiveBytesTransferred = 0;
   private speedMeasurements: Array<{ time: number; bytes: number }> = [];
+  private speedometer = new Speedometer(50, 250);
   private currentFileIndex = 0;
 
   constructor(
@@ -128,6 +130,7 @@ export class FileTransferService {
     this.transferredBytes = 0;
     this.effectiveBytesTransferred = 0;
     this.speedMeasurements = [];
+    this.speedometer.reset();
     this.currentFileIndex = 0;
 
     // Prefer WebRTC DataChannels if any are open; otherwise use the WebSocket fallback channel
@@ -250,13 +253,17 @@ export class FileTransferService {
       compressionRatio: isCompressed ? compressionRatio : undefined
     });
 
+    const optimalChannelsCount = getOptimalConnections(file.size);
+
     while (offset < wireSize && !this.isCancelled) {
-      const openChannels = this.getActiveSendChannels();
-      if (openChannels.length === 0) {
+      const allOpenChannels = this.getActiveSendChannels();
+      if (allOpenChannels.length === 0) {
         await new Promise((r) => setTimeout(r, 30));
         continue;
       }
 
+      // Restrict active channels pool according to Send Anywhere's optimal connection profile
+      const openChannels = allOpenChannels.slice(0, Math.min(allOpenChannels.length, optimalChannelsCount));
       const targetChannel = openChannels.reduce((lowest, ch) => {
         return ch.bufferedAmount < lowest.bufferedAmount ? ch : lowest;
       }, openChannels[0]);
@@ -338,6 +345,7 @@ export class FileTransferService {
     this.transferredBytes = 0;
     this.effectiveBytesTransferred = 0;
     this.speedMeasurements = [];
+    this.speedometer.reset();
   }
 
   private async handleControlMessage(msg: any): Promise<void> {
@@ -348,6 +356,7 @@ export class FileTransferService {
         this.effectiveBytesTransferred = 0;
         this.pendingBatchComplete = false;
         this.speedMeasurements = [];
+        this.speedometer.reset();
         break;
 
       case 'FILE_START': {
@@ -594,14 +603,16 @@ export class FileTransferService {
     isCompressed?: boolean
   ) {
     const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const ringSpeed = this.speedometer.recordBytes(fileBytesTransferred, Date.now());
+
     if (this.speedMeasurements.length === 0 || (this.speedMeasurements.length === 1 && this.speedMeasurements[0].bytes === 0)) {
       this.speedMeasurements = [{ time: now - 8, bytes: 0 }];
     }
     this.speedMeasurements.push({ time: now, bytes: this.transferredBytes });
     this.speedMeasurements = this.speedMeasurements.filter((m) => now - m.time <= 2000);
 
-    let speed = 0;
-    if (this.speedMeasurements.length > 1) {
+    let speed = ringSpeed;
+    if (speed <= 0 && this.speedMeasurements.length > 1) {
       const first = this.speedMeasurements[0];
       const timeDiff = Math.max(0.005, (now - first.time) / 1000);
       const bytesDiff = this.transferredBytes - first.bytes;

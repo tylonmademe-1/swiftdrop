@@ -99,4 +99,69 @@ describe('Parallel Multiplexing & Reordering Engine', () => {
     expect(acceleratedDuration).toBeLessThan(30);
     expect(tcpDuration / acceleratedDuration).toBeGreaterThan(6);
   });
+
+  it('verifies Send Anywhere adaptive connection sizing (1 <=25MB, 2 <=200MB, 4 >200MB)', async () => {
+    const { getOptimalConnections, getOptimalPartSize } = await import('../src/services/speedEngine');
+    const MB = 1024 * 1024;
+
+    // <= 25 MB: 1 stream
+    expect(getOptimalConnections(10 * MB)).toBe(1);
+    expect(getOptimalConnections(25 * MB)).toBe(1);
+
+    // <= 200 MB: 2 streams
+    expect(getOptimalConnections(50 * MB)).toBe(2);
+    expect(getOptimalConnections(200 * MB)).toBe(2);
+
+    // > 200 MB: 4 streams
+    expect(getOptimalConnections(500 * MB)).toBe(4);
+    expect(getOptimalConnections(5000 * MB)).toBe(4);
+
+    // Part sizing capped at 50 MB
+    expect(getOptimalPartSize(2 * MB, 1)).toBe(2 * MB);
+    expect(getOptimalPartSize(100 * MB, 4)).toBe(25 * MB);
+    expect(getOptimalPartSize(1000 * MB, 4)).toBe(50 * MB);
+  });
+
+  it('verifies 50-sample ring-buffer Speedometer throughput calculation & smoothing', async () => {
+    const { Speedometer, formatSpeedRate, formatEta } = await import('../src/services/speedEngine');
+    const speedometer = new Speedometer(50, 250);
+
+    const t0 = 100000;
+    speedometer.recordBytes(0, t0);
+    speedometer.recordBytes(5 * 1024 * 1024, t0 + 500); // 5 MB in 0.5s -> 10 MB/s
+    const speed = speedometer.recordBytes(5 * 1024 * 1024, t0 + 1000); // 10 MB in 1s -> 10 MB/s
+
+    expect(speed).toBeGreaterThan(0);
+    expect(formatSpeedRate(speed)).toContain('MB/s');
+    expect(formatEta(15)).toBe('ETA 15s');
+    expect(formatEta(90)).toBe('ETA 1m 30s');
+  });
+
+  it('verifies zero-copy createStreamWritable seekAndWrite locks and executes out-of-order chunks', async () => {
+    const { createStreamWritable } = await import('../src/services/speedEngine');
+    const writtenOffsets: number[] = [];
+
+    const mockStream = {
+      seek: async (pos: number) => {
+        writtenOffsets.push(pos);
+      },
+      write: async (_data: any) => {},
+      close: async () => {},
+      abort: async () => {}
+    };
+
+    const diskWritable = createStreamWritable(mockStream);
+
+    // Write parts 2, 0, 1 concurrently
+    await Promise.all([
+      diskWritable.write(2048, new Uint8Array(1024)),
+      diskWritable.write(0, new Uint8Array(1024)),
+      diskWritable.write(1024, new Uint8Array(1024))
+    ]);
+
+    expect(writtenOffsets.length).toBe(3);
+    expect(writtenOffsets).toContain(0);
+    expect(writtenOffsets).toContain(1024);
+    expect(writtenOffsets).toContain(2048);
+  });
 });
