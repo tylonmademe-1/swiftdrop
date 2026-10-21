@@ -45,9 +45,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
   }>({
     appUrl: window.location.origin,
     lanAppUrl: undefined,
-    maxFilesCount: 50,
-    maxTotalSizeBytes: 10 * 1024 * 1024 * 1024,
-    maxFileSizeBytes: 5 * 1024 * 1024 * 1024
+    maxFilesCount: 100,
+    maxTotalSizeBytes: 50 * 1024 * 1024 * 1024,
+    maxFileSizeBytes: 50 * 1024 * 1024 * 1024
   });
 
   // ==========================================

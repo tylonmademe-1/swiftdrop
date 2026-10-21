@@ -26,10 +26,11 @@ export class FileTransferService {
 
   // Receiver state
   private incomingFilesManifest: FileMetadata[] = [];
+  private readonly COALESCE_SEGMENT_SIZE = 128; // Coalesce every 128 chunks (~8MB) into native Blob to keep V8 heap < 30MB
   private currentReceivingFile: {
     fileIndex: number;
     metadata: FileMetadata;
-    chunks: ArrayBuffer[];
+    chunks: (ArrayBuffer | Blob)[];
     receivedChunksCount: number;
     expectedChunksCount: number;
     bytesReceived: number;
@@ -299,9 +300,9 @@ export class FileTransferService {
 
       this.updateProgress(fileId, file.name, file.size, fileTransferredBytes, wireSize, isCompressed);
 
-      // Yield briefly every 8 chunks so UI and WebSocket event loop stay responsive
-      if (chunkIndex % 8 === 0) {
-        await new Promise((r) => setTimeout(r, 2));
+      // Yield briefly every 32 chunks (~2MB) so UI and WebSocket event loop stay responsive at 60fps
+      if (chunkIndex % 32 === 0) {
+        await new Promise((r) => setTimeout(r, 0));
       }
     }
 
@@ -440,12 +441,41 @@ export class FileTransferService {
 
   private storeChunkForCurrentFile(chunkIndex: number, chunkData: ArrayBuffer) {
     if (!this.currentReceivingFile) return;
-    if (!this.currentReceivingFile.chunks[chunkIndex]) {
-      const current = this.currentReceivingFile;
+    const current = this.currentReceivingFile;
+    if (!current.chunks[chunkIndex]) {
       current.chunks[chunkIndex] = chunkData;
       current.receivedChunksCount++;
       current.bytesReceived += chunkData.byteLength;
       this.transferredBytes += chunkData.byteLength;
+
+      // Periodically coalesce completed chunk segments into Blobs to free V8 heap memory
+      const segmentStart = Math.floor(chunkIndex / this.COALESCE_SEGMENT_SIZE) * this.COALESCE_SEGMENT_SIZE;
+      const segmentEnd = Math.min(segmentStart + this.COALESCE_SEGMENT_SIZE, current.expectedChunksCount);
+
+      let isSegmentComplete = true;
+      for (let i = segmentStart; i < segmentEnd; i++) {
+        if (!current.chunks[i]) {
+          isSegmentComplete = false;
+          break;
+        }
+      }
+
+      if (isSegmentComplete && current.chunks[segmentStart] instanceof ArrayBuffer) {
+        const buffersToMerge: ArrayBuffer[] = [];
+        for (let i = segmentStart; i < segmentEnd; i++) {
+          const item = current.chunks[i];
+          if (item instanceof ArrayBuffer) {
+            buffersToMerge.push(item);
+          }
+        }
+        if (buffersToMerge.length === (segmentEnd - segmentStart)) {
+          const segmentBlob = new Blob(buffersToMerge, { type: 'application/octet-stream' });
+          current.chunks[segmentStart] = segmentBlob;
+          for (let i = segmentStart + 1; i < segmentEnd; i++) {
+            current.chunks[i] = new Blob([], { type: 'application/octet-stream' });
+          }
+        }
+      }
 
       const effectiveRatio =
         current.isCompressed && current.totalExpectedBytes > 0

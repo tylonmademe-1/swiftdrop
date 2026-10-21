@@ -18,9 +18,9 @@ export async function fetchServerConfig(): Promise<ServerPublicConfig> {
     console.warn('[SwiftDrop] Using fallback config:', err);
     const fallback: ServerPublicConfig = {
       appUrl: window.location.origin,
-      maxFilesCount: 50,
-      maxTotalSizeBytes: 10 * 1024 * 1024 * 1024,
-      maxFileSizeBytes: 5 * 1024 * 1024 * 1024,
+      maxFilesCount: 100,
+      maxTotalSizeBytes: 50 * 1024 * 1024 * 1024, // 50 GB
+      maxFileSizeBytes: 50 * 1024 * 1024 * 1024, // 50 GB
       sessionExpirySeconds: 300,
       turnConfigured: false,
       stunServers: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302']

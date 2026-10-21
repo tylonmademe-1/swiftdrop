@@ -91,10 +91,10 @@ setInterval(() => {
 const sessionExpirySeconds = parseInt(process.env.SESSION_EXPIRY_SECONDS || '300', 10);
 const sessionManager = new SessionManager(sessionExpirySeconds);
 
-// Public limits
-const maxFilesCount = parseInt(process.env.MAX_FILES_COUNT || '50', 10);
-const maxTotalSizeBytes = parseInt(process.env.MAX_TOTAL_SIZE_BYTES || '10737418240', 10); // 10 GB
-const maxFileSizeBytes = parseInt(process.env.MAX_FILE_SIZE_BYTES || '5368709120', 10); // 5 GB
+// Public limits (50GB default for high-speed P2P & store-and-forward)
+const maxFilesCount = parseInt(process.env.MAX_FILES_COUNT || '100', 10);
+const maxTotalSizeBytes = parseInt(process.env.MAX_TOTAL_SIZE_BYTES || '53687091200', 10); // 50 GB
+const maxFileSizeBytes = parseInt(process.env.MAX_FILE_SIZE_BYTES || '53687091200', 10); // 50 GB
 
 const stunServers = (process.env.STUN_SERVERS || 'stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302')
   .split(',')
