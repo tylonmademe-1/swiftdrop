@@ -23,7 +23,7 @@ import {
   OverallTransferProgress,
   FileTransferProgress
 } from '../types/transfer';
-import { Plus, ArrowRight, ArrowLeft, FileText, X, Key, QrCode } from 'lucide-react';
+import { Plus, ArrowRight, ArrowLeft, FileText, X, Key, QrCode, Zap, Link, Mail, Globe, Check } from 'lucide-react';
 
 interface HomePageProps {
   onNavigate: (tab: string) => void;
@@ -83,6 +83,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
   const cloudUploadingRef = useRef<boolean>(false);
   const cloudUploadAbortRef = useRef<AbortController | null>(null);
   const cloudPackageIdRef = useRef<string | null>(null);
+  const [sendTransferType, setSendTransferType] = useState<'direct' | 'link' | 'email'>('direct');
+  const [isBottomLangModalOpen, setIsBottomLangModalOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const [senderProgress, setSenderProgress] = useState<OverallTransferProgress>({
     totalBytes: 0,
@@ -1652,28 +1655,46 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
           />
 
           {/* CARD HEADER */}
-          <div className="flex items-center justify-between pb-3.5 border-b border-[#ebebeb]">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#fe4543]" />
-              <h2 className="text-[18px] sm:text-[20px] font-bold text-[#212529]">
-                {senderStatus === 'waiting_for_receiver' ||
-                senderStatus === 'receiver_pending' ||
-                senderStatus === 'negotiating' ||
-                senderStatus === 'awaiting_acceptance'
-                  ? '6-digit Key'
-                  : senderStatus === 'transferring'
-                  ? 'Sending Files'
-                  : 'Send'}
-              </h2>
-            </div>
-            {selectedFiles.length > 0 && senderStatus === 'created' && (
-              <button
-                type="button"
-                onClick={handleResetSender}
-                className="text-xs text-[#666666] hover:text-[#fe4543] font-medium transition-colors cursor-pointer"
-              >
-                Clear ({selectedFiles.length})
-              </button>
+          <div className="pb-3 border-b border-[#ebebeb]">
+            {selectedFiles.length === 0 || senderStatus !== 'created' ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#fe4543]" />
+                  <h2 className="text-[18px] sm:text-[20px] font-bold text-[#212529]">
+                    {senderStatus === 'waiting_for_receiver' ||
+                    senderStatus === 'receiver_pending' ||
+                    senderStatus === 'negotiating' ||
+                    senderStatus === 'awaiting_acceptance'
+                      ? '6-digit Key'
+                      : senderStatus === 'transferring'
+                      ? 'Sending Files'
+                      : 'Send'}
+                  </h2>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-[17px] font-bold text-[#212529] hover:text-[#fe4543] flex items-center gap-1.5 cursor-pointer transition-colors"
+                  >
+                    <Plus className="w-4.5 h-4.5 stroke-[2.5] text-[#fe4543]" />
+                    <span>Add more</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResetSender}
+                    className="reset-button text-xs text-[#9b9b9b] hover:text-[#fe4543] font-medium cursor-pointer transition-colors"
+                  >
+                    Reset
+                  </button>
+                </div>
+                <div className="desc3 text-xs text-[#9b9b9b] font-medium mt-1">
+                  Total {selectedFiles.length} files • {formatBytes(totalBytes)}
+                </div>
+              </div>
             )}
           </div>
 
@@ -1706,52 +1727,71 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                   </p>
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col justify-between space-y-3 my-3">
-                  <div className="p-3.5 bg-[#fafafa] rounded-xl border border-[#ebebeb]">
-                    <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#ebebeb]">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#666666]">
-                        Selected Files ({selectedFiles.length})
-                      </span>
-                      <span className="text-xs font-code font-bold text-[#fe4543]">
-                        {formatBytes(totalBytes)}
-                      </span>
-                    </div>
-
-                    <div className="max-h-44 overflow-y-auto space-y-1.5 pr-1">
-                      {selectedFiles.map((file, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ebebeb] text-xs hover:border-[#fe4543]/40 transition-colors"
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <FileText className="w-4 h-4 text-[#fe4543] shrink-0" />
-                            <span className="truncate text-[#212529] font-medium">
-                              {file.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2.5 shrink-0 ml-2">
-                            <span className="text-[#666666] font-code">
-                              {formatBytes(file.size)}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => removeFile(idx)}
-                              className="text-[#9b9b9b] hover:text-[#c64545] cursor-pointer p-0.5"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
+                <div className="flex-1 flex flex-col justify-between my-2">
+                  {/* File List */}
+                  <div className="max-h-48 overflow-y-auto pr-1 my-2 divide-y divide-[#f1f1f1]">
+                    {selectedFiles.map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="FileItem flex items-center justify-between py-2 px-1 text-xs group hover:bg-[#fafafa] rounded transition-colors"
+                      >
+                        <div className="file-name font-medium text-[#212529] truncate max-w-[65%]" title={file.name}>
+                          {file.name}
                         </div>
-                      ))}
-                    </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="file-size text-[#9b9b9b] font-code group-hover:hidden">
+                            {formatBytes(file.size)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(idx)}
+                            className="file-remove hidden group-hover:flex items-center justify-center text-[#9b9b9b] hover:text-[#fe4543] cursor-pointer p-0.5"
+                            title="Remove file"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
+                  {/* SendSwitch: Direct | Link | Email */}
+                  <div className="SendSwitch flex h-10 mt-3 bg-[#f8f9fa] border border-[#e0e4e6] rounded p-0.5">
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="mt-2.5 text-xs text-[#fe4543] hover:underline flex items-center gap-1 cursor-pointer font-bold"
+                      onClick={() => setSendTransferType('direct')}
+                      className={`w-1/3 h-full flex items-center justify-center gap-1.5 text-xs font-bold rounded transition-all cursor-pointer ${
+                        sendTransferType === 'direct'
+                          ? 'bg-white text-[#212529] shadow-xs'
+                          : 'text-[#9b9b9b] hover:text-[#212529]'
+                      }`}
                     >
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                      Add more files
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>Direct</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSendTransferType('link')}
+                      className={`w-1/3 h-full flex items-center justify-center gap-1.5 text-xs font-bold rounded transition-all cursor-pointer ${
+                        sendTransferType === 'link'
+                          ? 'bg-white text-[#212529] shadow-xs'
+                          : 'text-[#9b9b9b] hover:text-[#212529]'
+                      }`}
+                    >
+                      <Link className="w-3.5 h-3.5" />
+                      <span>Link</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSendTransferType('email')}
+                      className={`w-1/3 h-full flex items-center justify-center gap-1.5 text-xs font-bold rounded transition-all cursor-pointer ${
+                        sendTransferType === 'email'
+                          ? 'bg-white text-[#212529] shadow-xs'
+                          : 'text-[#9b9b9b] hover:text-[#212529]'
+                      }`}
+                    >
+                      <Mail className="w-3.5 h-3.5" />
+                      <span>Email</span>
                     </button>
                   </div>
                 </div>
@@ -1762,10 +1802,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
                   <button
                     type="button"
                     onClick={() => handleCreateSenderSession('code')}
-                    className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[15px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
+                    className="sa-btn-primary w-full h-12 bg-[#fe4543] hover:bg-[#d83f53] text-white font-bold text-[16px] rounded-lg shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99]"
                   >
-                    <span>Send ({selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'})</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Send</span>
                   </button>
                 ) : (
                   <button
@@ -2483,6 +2522,74 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
         onScanResult={handleQRScanResult}
         onOpticalFileReceived={handleOpticalFileReceived}
       />
+
+      {/* Floating Language Button (Send Anywhere bottom selector) */}
+      <div className="fixed bottom-4 right-4 sm:right-8 z-40">
+        <button
+          type="button"
+          onClick={() => setIsBottomLangModalOpen(true)}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white border border-[#ebebeb] shadow-md hover:shadow-lg text-xs font-bold text-[#212529] hover:text-[#fe4543] transition-all cursor-pointer"
+        >
+          <Globe className="w-4 h-4 text-[#fe4543]" />
+          <span>Language</span>
+        </button>
+      </div>
+
+      {/* Language Selector Modal */}
+      {isBottomLangModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-md rounded-2xl border border-[#ebebeb] shadow-2xl p-6 relative">
+            <div className="flex items-center justify-between pb-4 border-b border-[#ebebeb] mb-4">
+              <div className="flex items-center gap-2">
+                <Globe className="w-5 h-5 text-[#fe4543]" />
+                <h3 className="text-lg font-bold text-[#212529]">Select Language</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsBottomLangModalOpen(false)}
+                className="text-[#9b9b9b] hover:text-[#212529] cursor-pointer p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
+              {[
+                { code: 'en', name: 'English', native: 'English' },
+                { code: 'ko', name: 'Korean', native: '한국어' },
+                { code: 'ja', name: 'Japanese', native: '日本語' },
+                { code: 'es', name: 'Spanish', native: 'Español' },
+                { code: 'fr', name: 'French', native: 'Français' },
+                { code: 'de', name: 'German', native: 'Deutsch' },
+                { code: 'zh', name: 'Chinese', native: '简体中文' },
+                { code: 'pt', name: 'Portuguese', native: 'Português' }
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => {
+                    setSelectedLanguage(lang.name);
+                    setIsBottomLangModalOpen(false);
+                  }}
+                  className={`flex items-center justify-between p-3 rounded-lg border text-left transition-all cursor-pointer ${
+                    selectedLanguage === lang.name
+                      ? 'border-[#fe4543] bg-[#fff0f2] text-[#fe4543] font-bold'
+                      : 'border-[#ebebeb] hover:bg-[#fafafa] text-[#212529] font-medium'
+                  }`}
+                >
+                  <div>
+                    <p className="text-xs">{lang.native}</p>
+                    <p className="text-[10px] text-[#9b9b9b]">{lang.name}</p>
+                  </div>
+                  {selectedLanguage === lang.name && (
+                    <Check className="w-4 h-4 text-[#fe4543]" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
