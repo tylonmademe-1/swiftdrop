@@ -120,17 +120,18 @@ SwiftDrop is organized around three primary experiences:
 
 ### High-Performance Transfer Engine
 
-SwiftDrop implements a configurable transport architecture inspired by parallel file-transfer systems such as bbcp and lftp.
+SwiftDrop implements a high-throughput transport engine reverse-engineered directly from Send Anywhere's production client (`FloatingMenu` and `s3Upload` core modules) using REA:
 
 | Capability | Description |
 |---|---|
-| Parallel DataChannels | Configurable 1×, 2×, 4×, or 8× channel configurations |
-| Binary chunk framing | Magic identifier, chunk indexes, and packet metadata |
-| Adaptive chunking | 64 KiB, 128 KiB, and 256 KiB chunk configurations |
-| Backpressure | Buffered-amount monitoring to manage queued data |
-| Chunk reassembly | Reconstruct files when chunks arrive out of order |
-| Integrity verification | SHA-256 verification of transferred file contents |
-| Network telemetry | Connection statistics, RTT, and active transport details |
+| 50-Sample Speedometer | Sliding ring-buffer `Speedometer(50, 250)` sampled at 250ms for smooth throughput rate and accurate ETA remaining |
+| Dynamic Part Sizing | `WE(size, connections)` algorithm scaling chunk part sizes from 5 MB to 50 MB based on payload size |
+| Adaptive Concurrency | Dynamically balances 1, 2, or 4 concurrent DataChannel streams based on payload profile and network RTT |
+| Zero-Copy Disk Streaming | `createStreamWritable` with `seekAndWrite` to stream data directly into local file storage without V8 heap buffering |
+| Binary Chunk Framing | Magic identifier (`SD01`), chunk indexes, and packet metadata for multi-channel chunk reconstruction |
+| Backpressure Regulation | Buffered-amount monitoring to prevent queue buildup and buffer overflow |
+| Integrity Verification | SHA-256 verification of transferred file contents |
+| Network Telemetry | Connection statistics, RTT, and active transport details |
 
 Parallel channels allow chunks to be distributed across multiple DataChannels. The receiver uses chunk metadata to reconstruct the original file in the correct order.
 
@@ -189,10 +190,18 @@ Inspired by the Send Anywhere protocol, SwiftDrop implements a universal 6-digit
 
 ### Send Anywhere Dual-Card UI/UX
 
-SwiftDrop features a dedicated design system reverse-engineered from Send Anywhere:
+SwiftDrop features an authentic design system reverse-engineered directly from Send Anywhere using REA:
 
 - **Dual-Card Desktop Architecture:** On desktop displays, the **Send** and **Receive** cards sit side-by-side in a responsive 2-column console, allowing users to drop files or enter keys without toggling tabs.
 - **Responsive Mobile Single-Card Mode:** On compact mobile devices, an adaptive segmented pill toggles cleanly between Send and Receive.
+- **Authentic `.Waiting` Screen:** Exact layout decompiled from Send Anywhere (`.Waiting.widget-container`), featuring `.send-wait-header` with back button, `"Waiting for receiver..."`, countdown text timer (`"The key expires in mm:ss"`), 6-digit key box with 3-3 gap split, centered QR code frame (`.qr-wrapper`), and `.copy-box` link.
+- **Zero Extraneous Progress Bars:** Clean waiting screen verified against Send Anywhere source—no dog mascots, optical tabs, or unnecessary progress bars during the code waiting state.
+- **Authentic `.BarProgress` Dual-Text Reveal:** Features Send Anywhere's signature two-layer progress bar (`.progress-text.shadow` overlaid with `#fe4543` `.progress` containing crisp white text) and `.FooterProgressV2` live throughput rate and ETA.
+- **Dedicated Send Anywhere Multi-Page Suite:**
+  - **Pricing (`/pricing`):** Complete tier comparison (Free $0, SwiftDrop Plus $5.99/mo, Business $12.99/mo), monthly/yearly billing toggle (Save 17%), and FAQ.
+  - **Download Apps (`/file-transfer`):** Native desktop client installers (Windows `.exe`, macOS `.dmg`, Linux `.deb`), mobile store badges, and browser extensions (Chrome, Outlook 365).
+  - **My Link (`/my-link`):** 1 TB cloud storage usage gauge, active link ledger with expiration countdown, download counts, and copy/delete actions.
+  - **About (`/about`):** Direct P2P philosophy, privacy-by-default architecture, and mission statement.
 - **Iconic Visual Elements:** Includes the Send Anywhere signature `#fe4543` colorway, circular `+` file dropzone (`.sa-plus-btn`), 6-digit separate digit block boxes (`.sa-key-digit`), and smooth elevation shadows.
 - **Typography:** Uses clean, modern `Roboto` and `Inter` sans-serif fonts with monospaced tabular numerals.
 
@@ -318,6 +327,7 @@ SwiftDrop separates application logic, signaling, persistent storage, and file t
 | Backend | Node.js and Express |
 | Signaling | WebSocket |
 | File transport | WebRTC DataChannels (up to 50 GB with native Blob coalescing) |
+| Speed Engine | REA-decompiled 50-sample ring-buffer speedometer, dynamic part sizing WE(size, connections), and zero-copy streaming |
 | Transport security | DTLS through WebRTC |
 | Connectivity | ICE with STUN/TURN |
 | Persistent storage | SQLite |
@@ -663,12 +673,15 @@ A representative structure for organizing SwiftDrop's application code:
 ```text
 swiftdrop/
 ├── src/
-│   ├── client/                 # Web interface
-│   ├── server/                 # Express API and signaling
-│   ├── transfer/               # WebRTC and file transport
-│   ├── auth/                   # Authentication and sessions
-│   └── shared/                 # Shared types and protocol definitions
-├── tests/
+│   ├── components/             # Header, Footer, QRScanner, Toast
+│   ├── pages/                  # HomePage, PricingPage, DownloadPage, MyLinkPage, AboutPage, AuthPages
+│   ├── services/               # speedEngine, fileTransferService, webrtcService, signalingClient
+│   ├── utils/                  # format, clipboard
+│   ├── types/                  # transfer protocol types
+│   ├── context/                # AuthContext
+│   └── main.tsx                # Application root
+├── server/                     # Express signaling, SQLite database, auth
+├── tests/                      # Vitest test suite (38 tests)
 │   ├── e2e_transfer.test.ts
 │   ├── sessions.test.ts
 │   ├── framing.test.ts
@@ -676,7 +689,7 @@ swiftdrop/
 │   ├── acceleration.test.ts
 │   └── compression.test.ts
 ├── data/                       # Persistent SQLite database
-├── public/                     # Static public assets
+├── server.ts                   # Unified dev & prod server entry
 ├── .env.example
 ├── package.json
 └── README.md
