@@ -1,0 +1,69 @@
+rules:
+  - id: express-untrusted-host-header-origin
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Untrusted 'x-forwarded-host' or 'x-forwarded-proto' header used directly to build URLs.
+      Sanitize protocol to 'http'|'https' and validate host format to prevent Host Header Injection in QR/pairing links.
+    patterns:
+      - pattern: |
+          const $HOST = req.headers['x-forwarded-host'] || ...;
+      - pattern-not-inside: |
+          function sanitizeHostHeader(...) { ... }
+
+  - id: express-http-range-unchecked-bounds
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      fs.createReadStream called with HTTP Range start/end without checking start < 0, end >= totalSize, or start > end.
+      Malformed Range headers can trigger uncaught RangeError crashes.
+    patterns:
+      - pattern: fs.createReadStream($PATH, { start: $START, end: $END })
+      - pattern-not-inside: |
+          if (...) {
+            ...
+            res.status(416)...
+            ...
+          }
+
+  - id: node-fs-sparse-file-offset-bomb
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      fs.writeSync called with user-supplied offset without upper-bound check against declared file size.
+      An attacker could pass a huge offset to allocate multi-GB sparse files on disk.
+    patterns:
+      - pattern: fs.writeSync($FD, $BUF, 0, $LEN, $OFFSET)
+
+  - id: express-idor-transfer-status-update
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Updating transfer status without verifying ownership when transfer belongs to an authenticated user.
+    patterns:
+      - pattern: transferRepo.updateTransferStatus($ID, $STATUS, ...)
+
+  - id: websocket-connecting-premature-resolve
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: >
+      Resolving SignalingClient.connect() while WebSocket.readyState === WebSocket.CONNECTING causes immediate send() calls to fail.
+    pattern: |
+      if ($WS && ($WS.readyState === WebSocket.OPEN || $WS.readyState === WebSocket.CONNECTING)) {
+        resolve();
+        return;
+      }
+
+  - id: webrtc-unbounded-chunk-array-allocation
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Avoid pre-allocating 'new Array(expectedChunks)' directly from untrusted signaling payload.
+    pattern: new Array($EXPECTED_CHUNKS)
+
+  - id: react-direct-window-location-authenticated-api
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: >
+      Avoid 'window.location.href = "/api/..."' for authenticated downloads; use fetch() with buildAuthHeaders() and Blob download so Bearer tokens are included.
+    pattern: window.location.href = `/api/$PATH`

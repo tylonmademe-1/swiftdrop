@@ -1,0 +1,6 @@
+{
+  "name": "SwiftDrop",
+  "description": "Secure, direct peer-to-peer device file transfer using WebRTC and temporary pairing codes or QR codes.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
