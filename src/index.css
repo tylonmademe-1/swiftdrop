@@ -229,77 +229,6 @@
   box-shadow: 0 2px 8px -2px rgba(28, 27, 24, 0.02);
 }
 
-/* Mascot & Track Progress Shimmer Keyframes */
-@keyframes dogBodyGallop {
-  0%, 100% { transform: translateY(0px) rotate(1deg); }
-  50% { transform: translateY(-4px) rotate(-2deg); }
-}
-@keyframes dogEarFlap {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-8deg); }
-}
-@keyframes dogTailWag {
-  0%, 100% { transform: rotate(18deg); }
-  50% { transform: rotate(-12deg); }
-}
-@keyframes legFrontA {
-  0%, 100% { transform: rotate(26deg); }
-  50% { transform: rotate(-28deg); }
-}
-@keyframes legFrontB {
-  0%, 100% { transform: rotate(-26deg); }
-  50% { transform: rotate(28deg); }
-}
-@keyframes legBackA {
-  0%, 100% { transform: rotate(-28deg); }
-  50% { transform: rotate(24deg); }
-}
-@keyframes legBackB {
-  0%, 100% { transform: rotate(24deg); }
-  50% { transform: rotate(-28deg); }
-}
-@keyframes subtlePulse {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
-}
-@keyframes shimmerStream {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.dog-gallop {
-  animation: dogBodyGallop 0.38s ease-in-out infinite;
-}
-.dog-ear {
-  transform-origin: 29px 12px;
-  animation: dogEarFlap 0.38s ease-in-out infinite;
-}
-.dog-tail-wag {
-  transform-origin: 7px 18px;
-  animation: dogTailWag 0.28s ease-in-out infinite alternate;
-}
-.leg-fa {
-  transform-origin: 26px 26px;
-  animation: legFrontA 0.38s ease-in-out infinite;
-}
-.leg-fb {
-  transform-origin: 26px 26px;
-  animation: legFrontB 0.38s ease-in-out infinite;
-}
-.leg-ba {
-  transform-origin: 12px 26px;
-  animation: legBackA 0.38s ease-in-out infinite;
-}
-.leg-bb {
-  transform-origin: 12px 26px;
-  animation: legBackB 0.38s ease-in-out infinite;
-}
-.progress-shimmer {
-  background: linear-gradient(90deg, #fe4543 0%, #ff6b69 35%, #ffd2d1 50%, #ff6b69 65%, #fe4543 100%);
-  background-size: 200% 100%;
-  animation: shimmerStream 2.4s linear infinite;
-}
-
 /* Authentic Send Anywhere Design Tokens & Utility Classes */
 .sa-card {
   background-color: #ffffff;
@@ -389,6 +318,114 @@
 }
 
 /* 6-Digit Key Box (Send Anywhere Waiting Screen) */
+.Waiting {
+  min-height: 320px;
+}
+
+.Waiting .send-wait-header {
+  margin-right: -4px;
+  padding: 16px 0 0 36px;
+  position: relative;
+}
+
+.Waiting .send-wait-header .title3 {
+  margin-bottom: 2px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.Waiting .send-wait-header .desc3 {
+  color: #9b9b9b;
+  font-size: 12px;
+}
+
+.Waiting .send-wait-header .back-button {
+  left: 0;
+  top: 16px;
+  position: absolute;
+  cursor: pointer;
+}
+
+.Waiting .key-box {
+  margin: 20px 0 16px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Waiting .key-box > span {
+  color: #212529;
+  background-color: #fafafa;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 60px;
+  border-radius: 4px;
+  border: 1px solid #e0e4e6;
+  font-family: var(--font-code);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.Waiting .key-box:hover > span {
+  border-color: rgba(254, 69, 67, 0.5);
+  background-color: #ffffff;
+}
+
+.Waiting .key-box > span:nth-child(3) {
+  margin-right: 12px;
+}
+
+.QRInner {
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.QRInner .qr-wrapper {
+  margin: 0 auto 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.QRInner .copy-box {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background-color: #fafafa;
+  border: 1px solid #e0e4e6;
+  cursor: pointer;
+  transition: all ease-in-out 0.2s;
+}
+
+.QRInner .copy-box:hover {
+  background-color: #f1f1f1;
+  border-color: #d0d4d6;
+}
+
+.QRInner .link {
+  display: inline-block;
+  color: #666;
+  font-weight: 700;
+  vertical-align: middle;
+  text-decoration: underline;
+}
+
+.QRInner .link > span {
+  color: #212529;
+}
+
+.QRInner .exp {
+  color: #9b9b9b;
+}
+
 .sa-key-box {
   margin: 16px 0;
   display: flex;

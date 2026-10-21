@@ -5,7 +5,6 @@ import { copyTextToClipboard, readTextFromClipboard, formatAlphaSessionCode, for
 import { useToast } from '../components/Toast';
 import { fetchServerConfig, fetchIceServers } from '../services/configService';
 import { generateQRCode } from '../services/qrService';
-import { createQRFerryStream, renderQRFerryFrame } from '../services/qrFerryService';
 import { SignalingClient, createWebSocketChannelAdapter } from '../services/signalingClient';
 import { WebRTCService } from '../services/webrtcService';
 import { FileTransferService } from '../services/fileTransferService';
@@ -60,10 +59,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
 
   const [senderStatus, setSenderStatus] = useState<SessionStatus>('created');
   const [pairingMode, setPairingMode] = useState<'code' | 'qr'>('code');
-  const [qrMode, setQrMode] = useState<'pairing' | 'optical'>('pairing');
-  const [opticalFrameUrl, setOpticalFrameUrl] = useState<string>('');
-  const [opticalFrameIndex, setOpticalFrameIndex] = useState<number>(0);
-  const [opticalTotalFrames, setOpticalTotalFrames] = useState<number>(0);
   const [senderSessionId, setSenderSessionId] = useState<string | null>(null);
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
@@ -73,7 +68,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   // Store-and-Forward 5MB Chunked Upload State (WeTransfer / SwissTransfer model)
   const [cloudUploadPercent, setCloudUploadPercent] = useState<number>(0);
@@ -251,14 +245,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
         return Math.min(100, Math.max(0, Math.round(senderProgress.percent)));
       }
       if (senderStatus === 'completed') return 100;
-      if (
-        pairingMode === 'qr' &&
-        qrMode === 'optical' &&
-        opticalTotalFrames > 0 &&
-        senderStatus === 'waiting_for_receiver'
-      ) {
-        return Math.min(100, Math.round((opticalFrameIndex / opticalTotalFrames) * 100));
-      }
       if (senderStatus === 'waiting_for_receiver' && (cloudUploadPercent > 0 || cloudPackageReady)) {
         return cloudPackageReady ? 100 : cloudUploadPercent;
       }
@@ -280,14 +266,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
       if (senderStatus === 'completed') {
         const finalSpeed = senderProgress.effectiveSpeedBytesPerSec || senderProgress.speedBytesPerSec;
         return finalSpeed > 0 ? formatSpeed(finalSpeed) : 'Completed';
-      }
-      if (
-        pairingMode === 'qr' &&
-        qrMode === 'optical' &&
-        selectedFiles.length > 0 &&
-        senderStatus === 'waiting_for_receiver'
-      ) {
-        return 'Optical 10 FPS';
       }
       if (senderStatus === 'waiting_for_receiver') {
         if (cloudPackageReady) {
@@ -368,66 +346,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
     };
   }, [qrUrl]);
 
-  // QRFerry Live Optical QR Stream (deedy/qr-data-transfer animated frame loop)
-  useEffect(() => {
-    if (
-      pairingMode !== 'qr' ||
-      qrMode !== 'optical' ||
-      selectedFiles.length === 0 ||
-      (senderStatus !== 'waiting_for_receiver' &&
-        senderStatus !== 'receiver_pending' &&
-        senderStatus !== 'negotiating' &&
-        senderStatus !== 'awaiting_acceptance')
-    ) {
-      setOpticalFrameUrl('');
-      return;
-    }
-
-    // Guard against encoding multi-MB/GB files into in-memory optical QR frames
-    if (selectedFiles[0].size > 2 * 1024 * 1024) {
-      setQrMode('pairing');
-      showToast('Optical QR stream is for small files (< 2 MB). Using Pairing QR for large files.', 'info');
-      return;
-    }
-
-    let cancelled = false;
-    let intervalId: any = null;
-
-    createQRFerryStream(selectedFiles[0]).then(async (stream) => {
-      if (cancelled || stream.frames.length === 0) return;
-      setOpticalTotalFrames(stream.frames.length);
-
-      // Pre-render frames or render on tick at 10 FPS (100ms per frame for crisp phone camera lock)
-      const renderedUrls: string[] = [];
-      for (let i = 0; i < Math.min(stream.frames.length, 120); i++) {
-        if (cancelled) return;
-        renderedUrls.push(await renderQRFerryFrame(stream.frames[i]));
-      }
-
-      let idx = 0;
-      const tick = async () => {
-        if (cancelled) return;
-        const frameIdx = idx % stream.frames.length;
-        setOpticalFrameIndex(frameIdx + 1);
-        if (renderedUrls[frameIdx]) {
-          setOpticalFrameUrl(renderedUrls[frameIdx]);
-        } else {
-          const url = await renderQRFerryFrame(stream.frames[frameIdx]);
-          if (!cancelled) setOpticalFrameUrl(url);
-        }
-        idx++;
-      };
-
-      tick();
-      intervalId = setInterval(tick, 100);
-    });
-
-    return () => {
-      cancelled = true;
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [pairingMode, qrMode, selectedFiles, senderStatus]);
-
   // Countdown timer for active waiting session
   useEffect(() => {
     if (!expiresAt || (senderStatus !== 'waiting_for_receiver' && senderStatus !== 'receiver_pending')) {
@@ -487,7 +405,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
     setCloudPackageReady(false);
     setExpiresAt(null);
     setSecondsLeft(300);
-    setShowCancelConfirm(false);
     cloudPackageIdRef.current = null;
   };
 
@@ -613,7 +530,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
 
     cleanupSender();
     setPairingMode(mode);
-    setQrMode('pairing');
     setSenderStatus('waiting_for_receiver');
     setPairingCode(null);
     setSenderSessionId(null);
@@ -1821,7 +1737,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
             </div>
           )}
 
-          {/* STATE 2: WAITING FOR RECEIVER (SEND ANYWHERE 6-DIGIT KEY SCREEN) */}
+          {/* STATE 2: WAITING FOR RECEIVER (SEND ANYWHERE AUTHENTIC 6-DIGIT KEY SCREEN) */}
           {(senderStatus === 'waiting_for_receiver' ||
             senderStatus === 'receiver_pending' ||
             senderStatus === 'negotiating' ||
@@ -1829,206 +1745,82 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialTab = 'se
             (() => {
               const cleanCode = (pairingCode || '').replace(/[^A-Za-z0-9]/g, '');
               const digits = (cleanCode.padEnd(6, '•')).slice(0, 6).split('');
-              const mascotPercent = cloudPackageReady
-                ? 100
-                : (!cloudPackageReady && cloudUploadPercent > 0
-                  ? cloudUploadPercent
-                  : 18);
 
               return (
-                <div className="flex-1 flex flex-col justify-between space-y-4 my-2">
-                  <div className="flex flex-col items-center text-center space-y-3.5">
-                    {/* Status Subtitle */}
-                    <div className="flex items-center gap-2 text-xs font-medium text-[#212529]">
-                      <span className="relative flex h-2.5 w-2.5 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fe4543] opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#fe4543]" />
-                      </span>
-                      <span>
-                        {senderStatus === 'waiting_for_receiver' &&
-                          (!cloudPackageReady && cloudUploadPercent > 0
-                            ? `Uploading chunks (${cloudUploadPercent}% • ${formatSpeed(cloudUploadSpeed)})...`
-                            : cloudPackageReady
-                              ? 'Key & Link Ready • Stored for 3 days + Live P2P'
-                              : 'Waiting for receiver to connect...')}
-                        {senderStatus === 'receiver_pending' && `${receiverLabel} joined • Connecting...`}
-                        {senderStatus === 'negotiating' && `Negotiating WebRTC with ${receiverLabel}...`}
-                        {senderStatus === 'awaiting_acceptance' && `Waiting for ${receiverLabel} to accept...`}
-                      </span>
+                <div className="Waiting widget-container flex-1 flex flex-col justify-between my-2">
+                  <div className="transfer-box-inner">
+                    {/* Send Wait Header */}
+                    <div className="send-wait-header border-box mb-3">
+                      <button
+                        type="button"
+                        onClick={handleCancelSenderSession}
+                        className="back-button text-[#9b9b9b] hover:text-[#fe4543] p-1 cursor-pointer transition-colors"
+                        title="Cancel transfer"
+                      >
+                        <ArrowLeft className="w-5 h-5" />
+                      </button>
+                      <h3 className="title3 bold text-[17px] font-bold text-[#212529]">
+                        Waiting for receiver...
+                      </h3>
+                      <div className="desc3 text-xs text-[#9b9b9b]">
+                        The key expires in {formatCountdown(secondsLeft)}
+                      </div>
                     </div>
 
-                    {/* Authentic Send Anywhere 6-digit key box */}
-                    <div className="w-full bg-[#fafafa] border border-[#e0e4e6] rounded-xl p-4 sm:p-5 flex flex-col items-center">
+                    {/* Authentic Send Anywhere 6-digit key box with click-to-copy */}
+                    <div className="center text-center my-2">
                       <div
-                        role="button"
-                        tabIndex={0}
+                        className="key-box pointer"
                         onClick={handleCopyCode}
-                        className="my-2 flex items-center justify-center gap-1.5 select-all cursor-pointer group"
-                        title="Click to copy key"
+                        title="Click to copy 6-digit key"
                       >
-                        <div className="flex items-center gap-1 sm:gap-1.5">
-                          {digits.slice(0, 3).map((d, i) => (
-                            <span
-                              key={i}
-                              className="sa-key-digit w-9 h-13 sm:w-11 sm:h-15 text-2xl sm:text-3xl font-bold bg-white border border-[#e0e4e6] rounded text-[#212529] font-code flex items-center justify-center shadow-2xs group-hover:border-[#fe4543]/40 transition-colors"
-                            >
-                              {d}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="w-2 sm:w-3" />
-                        <div className="flex items-center gap-1 sm:gap-1.5">
-                          {digits.slice(3, 6).map((d, i) => (
-                            <span
-                              key={i + 3}
-                              className="sa-key-digit w-9 h-13 sm:w-11 sm:h-15 text-2xl sm:text-3xl font-bold bg-white border border-[#e0e4e6] rounded text-[#212529] font-code flex items-center justify-center shadow-2xs group-hover:border-[#fe4543]/40 transition-colors"
-                            >
-                              {d}
-                            </span>
-                          ))}
-                        </div>
+                        {digits.map((d, i) => (
+                          <span key={i}>{d}</span>
+                        ))}
                       </div>
 
-                      {/* Expiration Countdown */}
-                      <div className="flex items-center gap-1 text-xs text-[#9b9b9b] font-medium mt-1">
-                        <span className="material-symbols-outlined text-[15px] text-[#fe4543]">timer</span>
-                        <span>Expires in {formatCountdown(secondsLeft)}</span>
-                      </div>
+                      {/* Authentic Send Anywhere QRInner */}
+                      <div className="QRInner">
+                        {qrDataUrl && (
+                          <figure className="qr-wrapper">
+                            <div className="p-2 bg-white border border-[#ebebeb] rounded-xl shadow-xs">
+                              <img
+                                src={qrDataUrl}
+                                alt="Send Anywhere QR Code"
+                                className="w-28 h-28 sm:w-32 sm:h-32 object-contain"
+                              />
+                            </div>
+                          </figure>
+                        )}
 
-                      {/* Action Buttons: Copy Key & Copy Link */}
-                      <div className="flex items-center gap-2 mt-3.5 w-full max-w-xs justify-center">
-                        <button
-                          type="button"
-                          onClick={handleCopyCode}
-                          disabled={!pairingCode}
-                          className="flex-1 py-2 px-3 rounded-lg bg-white hover:bg-[#f1f1f1] border border-[#e0e4e6] text-xs font-bold text-[#212529] flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-                        >
-                          <span className="material-symbols-outlined text-[15px] text-[#fe4543]">
-                            {copiedCode ? 'check' : 'content_copy'}
-                          </span>
-                          <span>{copiedCode ? 'Copied!' : 'Copy Key'}</span>
-                        </button>
-                        <button
-                          type="button"
+                        <div
+                          className="copy-box pointer"
                           onClick={handleCopyLink}
-                          disabled={!qrUrl}
-                          className="flex-1 py-2 px-3 rounded-lg bg-[#fe4543] hover:bg-[#d83f53] text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                          title="Click to copy link"
                         >
-                          <span className="material-symbols-outlined text-[15px]">
-                            {copiedLink ? 'check' : 'link'}
-                          </span>
-                          <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-                        </button>
-                      </div>
-
-                      {/* QR Section */}
-                      <div className="mt-4 pt-3 border-t border-[#ebebeb] w-full flex flex-col items-center">
-                        <div className="inline-flex p-0.5 rounded-lg bg-[#f1f1f1] border border-[#e0e4e6] mb-2">
-                          <button
-                            type="button"
-                            onClick={() => setQrMode('pairing')}
-                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                              qrMode === 'pairing' ? 'bg-white text-[#212529] shadow-2xs' : 'text-[#666666]'
-                            }`}
-                          >
-                            Pairing QR
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setQrMode('optical')}
-                            className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                              qrMode === 'optical' ? 'bg-white text-[#212529] shadow-2xs' : 'text-[#666666]'
-                            }`}
-                          >
-                            Optical Stream
-                          </button>
-                        </div>
-
-                        <div className="p-2 bg-white border border-[#e0e4e6] rounded-lg shadow-2xs">
-                          <div className="w-28 h-28 sm:w-32 sm:h-32 bg-white flex items-center justify-center overflow-hidden">
-                            {qrMode === 'optical' ? (
-                              opticalFrameUrl ? (
-                                <img src={opticalFrameUrl} alt="Optical Stream" className="w-full h-full object-contain" />
-                              ) : (
-                                <div className="flex flex-col items-center gap-1 p-2 text-center">
-                                  <span className="material-symbols-outlined text-lg text-[#fe4543] animate-spin">sync</span>
-                                  <span className="text-[10px] text-[#666666]">Encoding...</span>
-                                </div>
-                              )
-                            ) : qrDataUrl ? (
-                              <img src={qrDataUrl} alt="Session QR" className="w-full h-full object-contain" />
-                            ) : (
-                              <div className="flex flex-col items-center gap-1 p-2 text-center">
-                                <span className="material-symbols-outlined text-lg text-[#fe4543] animate-spin">sync</span>
-                                <span className="text-[10px] text-[#666666]">Generating...</span>
-                              </div>
-                            )}
+                          <div className="flex items-center justify-center gap-1.5">
+                            <Link className="w-3.5 h-3.5 text-[#fe4543]" />
+                            <p className="link desc2 text-xs">
+                              swiftdrop.io/<span>{cleanCode}</span>
+                            </p>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Mascot Track Bar */}
-                      <div className="w-full mt-3 pt-2 border-t border-[#ebebeb]">
-                        <div className="relative w-full h-8 flex items-end">
-                          <div
-                            className="dog-gallop absolute bottom-1 z-10 transition-all duration-300 pointer-events-none"
-                            style={{ left: `${Math.min(94, Math.max(6, mascotPercent))}%`, transform: 'translateX(-50%)' }}
-                          >
-                            <svg width="34" height="22" viewBox="0 0 52 34" fill="none">
-                              <path className="dog-tail-wag" d="M10 14 C6 11, 3 8, 2 5" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
-                              <line className="leg-ba" x1="14" y1="22" x2="11" y2="31" stroke="#d83f53" strokeWidth="3" strokeLinecap="round" />
-                              <line className="leg-bb" x1="18" y1="22" x2="22" y2="31" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
-                              <ellipse cx="23" cy="18" rx="13" ry="7" fill="#fe4543" />
-                              <circle cx="36" cy="11" r="6" fill="#fe4543" />
-                              <path className="dog-ear" d="M34 9 C32 13, 31 18, 33 20" stroke="#b02638" strokeWidth="2.5" strokeLinecap="round" />
-                              <ellipse cx="41" cy="12" rx="4" ry="2.5" fill="#fe4543" />
-                              <circle cx="44.5" cy="11.5" r="1.2" fill="#212529" />
-                              <circle cx="37" cy="9.5" r="1" fill="#212529" />
-                              <rect x="31" y="12" width="2" height="6" rx="1" fill="#ffffff" />
-                              <line className="leg-fa" x1="30" y1="22" x2="35" y2="31" stroke="#fe4543" strokeWidth="3" strokeLinecap="round" />
-                              <line className="leg-fb" x1="26" y1="22" x2="21" y2="31" stroke="#d83f53" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                          </div>
-                          <div className="w-full bg-[#e0e4e6] h-1.5 rounded-full overflow-hidden">
-                            <div className="progress-shimmer h-full rounded-full transition-all duration-300" style={{ width: `${mascotPercent}%` }} />
-                          </div>
+                          <p className="exp desc3 text-[11px] mt-0.5">
+                            {copiedLink ? 'Link Copied!' : 'Click to copy shareable link'}
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Cancel Button */}
-                  <div>
-                    {!showCancelConfirm ? (
-                      <button
-                        type="button"
-                        onClick={() => setShowCancelConfirm(true)}
-                        className="w-full h-10 bg-[#fafafa] hover:bg-[#fff0f2] text-[#c64545] border border-[#e0e4e6] font-bold text-xs rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">close</span>
-                        <span>Cancel Session</span>
-                      </button>
-                    ) : (
-                      <div className="p-2.5 rounded-lg border border-[#c64545]/20 bg-[#c64545]/5 flex items-center justify-between gap-2 text-xs">
-                        <span className="text-[#c64545] font-semibold">Discard active session?</span>
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => setShowCancelConfirm(false)}
-                            className="px-2.5 py-1 rounded bg-white border border-[#e0e4e6] font-semibold cursor-pointer"
-                          >
-                            Keep
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleCancelSenderSession}
-                            className="px-2.5 py-1 rounded bg-[#c64545] text-white font-bold cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                  <div className="pt-3 border-t border-[#f1f1f1]">
+                    <button
+                      type="button"
+                      onClick={handleCancelSenderSession}
+                      className="text-button gray w-full py-2 text-xs text-[#9b9b9b] hover:text-[#fe4543] font-medium transition-colors cursor-pointer text-center"
+                    >
+                      Cancel Transfer
+                    </button>
                   </div>
                 </div>
               );
