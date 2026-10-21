@@ -5,13 +5,14 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
 import { LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage } from './pages/AuthPages';
-import { ConverterPage } from './pages/ConverterPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { PricingPage } from './pages/PricingPage';
+import { DownloadPage } from './pages/DownloadPage';
+import { MyLinkPage } from './pages/MyLinkPage';
+import { AboutPage } from './pages/AboutPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { TransferDetailsPage } from './pages/TransferDetailsPage';
 import { DevicesPage } from './pages/DevicesPage';
 import { SettingsPage } from './pages/SettingsPage';
-import { SpeedAccelerationHub } from './components/SpeedAccelerationHub';
 import { HelpModal } from './components/HelpModal';
 
 function MainApp() {
@@ -69,13 +70,22 @@ function MainApp() {
         />
       );
     }
-    if (currentRoute === 'converter') {
-      return <ConverterPage onBackToHome={() => navigateTo('home')} />;
+    if (currentRoute === 'pricing' || currentRoute === 'pricing/upgrade') {
+      return <PricingPage onNavigate={navigateTo} />;
     }
-    if (currentRoute === 'login') {
+    if (currentRoute === 'file-transfer' || currentRoute === 'download') {
+      return <DownloadPage onNavigate={navigateTo} />;
+    }
+    if (currentRoute === 'my-link' || currentRoute === 'mylink') {
+      return <MyLinkPage onNavigate={navigateTo} />;
+    }
+    if (currentRoute === 'about') {
+      return <AboutPage onNavigate={navigateTo} />;
+    }
+    if (currentRoute === 'login' || currentRoute === 'sign-in') {
       return <LoginPage onNavigate={navigateTo} />;
     }
-    if (currentRoute === 'register' || currentRoute === 'signup') {
+    if (currentRoute === 'register' || currentRoute === 'signup' || currentRoute === 'sign-up') {
       return <RegisterPage onNavigate={navigateTo} />;
     }
     if (currentRoute === 'forgot-password') {
@@ -84,8 +94,8 @@ function MainApp() {
     if (currentRoute.startsWith('reset-password')) {
       return <ResetPasswordPage onNavigate={navigateTo} />;
     }
-    if (currentRoute === 'dashboard') {
-      return <DashboardPage onNavigate={navigateTo} />;
+    if (currentRoute === 'devices') {
+      return <DevicesPage />;
     }
     if (currentRoute === 'history') {
       return <HistoryPage onNavigate={navigateTo} />;
@@ -98,20 +108,10 @@ function MainApp() {
       const transferId = currentRoute.replace('transfer/', '');
       return <TransferDetailsPage transferId={transferId} onNavigate={navigateTo} />;
     }
-    if (currentRoute === 'devices') {
-      return <DevicesPage />;
-    }
     if (currentRoute === 'settings' || currentRoute.startsWith('settings/')) {
       const sub = currentRoute.replace('settings/', '');
       const tab = sub === 'security' ? 'security' : sub === 'privacy' ? 'privacy' : 'profile';
       return <SettingsPage initialTab={tab} onNavigate={navigateTo} />;
-    }
-    if (currentRoute === 'speed') {
-      return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 w-full">
-          <SpeedAccelerationHub onStartTransfer={() => navigateTo('send')} />
-        </div>
-      );
     }
 
     return (

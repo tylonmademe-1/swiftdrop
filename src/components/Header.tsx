@@ -117,7 +117,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                   type="button"
                   onClick={() => setProductOpen(!productOpen)}
                   className={`text-[15px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
-                    currentTab === 'converter' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
+                    productOpen ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
                   }`}
                 >
                   <span>Product</span>
@@ -125,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                 </button>
 
                 {productOpen && (
-                  <div className="absolute left-0 mt-3 w-52 bg-white rounded-lg border border-[#ebebeb] shadow-lg py-2 z-50 text-xs">
+                  <div className="absolute left-0 mt-3 w-56 bg-white rounded-lg border border-[#ebebeb] shadow-lg py-2 z-50 text-xs">
                     <button
                       onClick={() => {
                         setProductOpen(false);
@@ -135,21 +135,21 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                     >
                       <Zap className="w-4 h-4 text-[#fe4543]" />
                       <div>
-                        <p className="font-bold">Direct Transfer</p>
-                        <p className="text-[11px] text-[#9b9b9b]">Real-time P2P streaming</p>
+                        <p className="font-bold">Send Anywhere Basic</p>
+                        <p className="text-[11px] text-[#9b9b9b]">Direct 6-digit key P2P transfer</p>
                       </div>
                     </button>
                     <button
                       onClick={() => {
                         setProductOpen(false);
-                        onNavigate('converter');
+                        onNavigate('file-transfer');
                       }}
                       className="w-full px-4 py-2.5 text-left hover:bg-[#fafafa] flex items-center gap-2.5 text-[#212529] transition-colors cursor-pointer"
                     >
-                      <ArrowLeftRight className="w-4 h-4 text-[#fe4543]" />
+                      <Cloud className="w-4 h-4 text-[#fe4543]" />
                       <div>
-                        <p className="font-bold">File Converter</p>
-                        <p className="text-[11px] text-[#9b9b9b]">Convert formats instantly</p>
+                        <p className="font-bold">Send Anywhere for Email</p>
+                        <p className="text-[11px] text-[#9b9b9b]">Outlook &amp; Gmail unlimited attachments</p>
                       </div>
                     </button>
                     <button
@@ -162,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                       <Laptop className="w-4 h-4 text-[#fe4543]" />
                       <div>
                         <p className="font-bold">Paired Devices</p>
-                        <p className="text-[11px] text-[#9b9b9b]">Multi-device transfers</p>
+                        <p className="text-[11px] text-[#9b9b9b]">Transfer across your signed-in devices</p>
                       </div>
                     </button>
                   </div>
@@ -171,41 +171,34 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
 
               <button
                 type="button"
-                onClick={() => setPricingOpen(true)}
-                className="text-[15px] font-bold text-[#666666] hover:text-[#212529] transition-colors cursor-pointer"
+                onClick={() => onNavigate('pricing')}
+                className={`text-[15px] font-bold transition-colors cursor-pointer ${
+                  currentTab === 'pricing' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
+                }`}
               >
                 Pricing
               </button>
 
               <button
                 type="button"
-                onClick={() => onNavigate('devices')}
-                className="text-[15px] font-bold text-[#666666] hover:text-[#212529] transition-colors cursor-pointer"
+                onClick={() => onNavigate('file-transfer')}
+                className={`text-[15px] font-bold transition-colors cursor-pointer ${
+                  currentTab === 'file-transfer' || currentTab === 'download' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
+                }`}
               >
                 Download
               </button>
 
               {user && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('dashboard')}
-                    className={`text-[15px] font-bold transition-colors cursor-pointer ${
-                      currentTab === 'dashboard' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
-                    }`}
-                  >
-                    Dashboard
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('history')}
-                    className={`text-[15px] font-bold transition-colors cursor-pointer ${
-                      currentTab === 'history' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
-                    }`}
-                  >
-                    History
-                  </button>
-                </>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('my-link')}
+                  className={`text-[15px] font-bold transition-colors cursor-pointer ${
+                    currentTab === 'my-link' ? 'text-[#fe4543]' : 'text-[#666666] hover:text-[#212529]'
+                  }`}
+                >
+                  My Link
+                </button>
               )}
             </nav>
           </div>
@@ -237,22 +230,12 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                       <button
                         onClick={() => {
                           setMenuOpen(false);
-                          onNavigate('dashboard');
+                          onNavigate('my-link');
                         }}
                         className="w-full px-4 py-2 text-left hover:bg-[#fafafa] flex items-center gap-2 text-[#212529] transition-colors cursor-pointer"
                       >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-[#666666]" />
-                        <span>Console Dashboard</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setMenuOpen(false);
-                          onNavigate('history');
-                        }}
-                        className="w-full px-4 py-2 text-left hover:bg-[#fafafa] flex items-center gap-2 text-[#212529] transition-colors cursor-pointer"
-                      >
-                        <History className="w-3.5 h-3.5 text-[#666666]" />
-                        <span>Transfer Ledger</span>
+                        <Zap className="w-3.5 h-3.5 text-[#666666]" />
+                        <span>My Link</span>
                       </button>
                       <button
                         onClick={() => {
@@ -272,7 +255,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onNavigate }) => {
                         className="w-full px-4 py-2 text-left hover:bg-[#fafafa] flex items-center gap-2 text-[#212529] transition-colors cursor-pointer"
                       >
                         <Settings className="w-3.5 h-3.5 text-[#666666]" />
-                        <span>Security & Settings</span>
+                        <span>Settings</span>
                       </button>
                     </div>
 
